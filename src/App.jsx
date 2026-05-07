@@ -148,8 +148,27 @@ function EpRow({ ep, isLocked, coins, onUnlock, onWatch }) {
   );
 }
 
+// ─── Bunny Stream Config ──────────────────────────────────────────────────────
+const BUNNY_LIBRARY_ID = "655429";
+
+// Карта серий: seriesId -> { episode -> videoId }
+// Добавляй новые видео сюда после загрузки в Bunny
+const VIDEO_MAP = {
+  1: {
+    1: "f3e962cb-828e-4771-888f-568df0f102d1", // Серия 1 — реальное видео
+  },
+};
+
+function getBunnyUrl(seriesId, episode) {
+  const videoId = VIDEO_MAP[seriesId]?.[episode];
+  if (!videoId) return null;
+  return `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${videoId}?autoplay=true&loop=false&muted=false&preload=true`;
+}
+
 // ─── Player ───────────────────────────────────────────────────────────────────
 function Player({ series, episode, onClose, onNext }) {
+  const bunnyUrl = getBunnyUrl(series.id, episode);
+
   return (
     <div style={{ position:"fixed", inset:0, background:"#000", zIndex:100, display:"flex", flexDirection:"column" }}>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", position:"absolute", top:0, left:0, right:0, zIndex:10, background:"linear-gradient(#000a,transparent)" }}>
@@ -157,17 +176,24 @@ function Player({ series, episode, onClose, onNext }) {
         <span style={{ color:"#fff", fontSize:13 }}>{series.title} — Серия {episode}</span>
         <div style={{ width:22 }}/>
       </div>
-      <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", background:"#0a0b10", position:"relative" }}>
-        <div style={{ textAlign:"center" }}>
-          <div style={{ fontSize:56, marginBottom:12 }}>🎬</div>
-          <div style={{ color:C.textMuted, fontSize:14 }}>Видеоплеер</div>
-          <div style={{ color:C.textDim, fontSize:11, marginTop:4 }}>Подключите Bunny.net или Cloudflare Stream</div>
-        </div>
-        <div style={{ position:"absolute", bottom:60, left:16, right:16, background:"rgba(0,0,0,0.85)", borderRadius:14, padding:16 }}>
-          <div style={{ color:"#fff", fontSize:13, marginBottom:8 }}>Серия {episode} из {series.episodes}</div>
-          <div style={{ background:"#1e1e2a", borderRadius:4, height:4, marginBottom:14 }}>
-            <div style={{ width:"30%", height:"100%", background:C.accent, borderRadius:4 }}/>
+
+      <div style={{ flex:1, position:"relative", background:"#000" }}>
+        {bunnyUrl ? (
+          <iframe
+            src={bunnyUrl}
+            style={{ position:"absolute", inset:0, width:"100%", height:"100%", border:"none" }}
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+            <div style={{ fontSize:56, marginBottom:12 }}>🎬</div>
+            <div style={{ color:C.textMuted, fontSize:14 }}>Видео скоро появится</div>
+            <div style={{ color:C.textDim, fontSize:11, marginTop:4 }}>Загрузите серию в Bunny Stream</div>
           </div>
+        )}
+
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent, #000a)", padding:"40px 16px 16px" }}>
           <button onClick={onNext} style={{ width:"100%", background:C.accent, color:"#fff", border:"none", borderRadius:10, padding:"11px", fontSize:14, fontWeight:700, cursor:"pointer" }}>
             Следующая серия →
           </button>
