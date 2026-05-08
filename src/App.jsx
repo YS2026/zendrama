@@ -382,16 +382,27 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
         </div>
       )}
 
-      {/* Субтитры — белый текст с тенью, без фона, по центру нижней части */}
+      {/* Субтитры — крупные, внизу */}
       {currentSub ? (
         <div style={{
-          position:"absolute", bottom:"25%", left:"6%", right:"6%",
-          textAlign:"center", zIndex:6, pointerEvents:"none",
+          position:"absolute",
+          bottom:"12%",
+          left:"4%", right:"4%",
+          textAlign:"center",
+          zIndex:6,
+          pointerEvents:"none",
         }}>
           <span style={{
-            color:"#fff", fontSize:17, fontWeight:700, lineHeight:1.5,
-            textShadow:"0 0 8px #000,0 0 8px #000,1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000",
-          }}>{currentSub}</span>
+            color:"#fff",
+            fontSize:24,
+            fontWeight:800,
+            lineHeight:1.4,
+            fontFamily:"-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
+            textShadow:"0 0 10px #000, 0 0 10px #000, 0 0 10px #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000",
+            letterSpacing:0.3,
+          }}>
+            {currentSub}
+          </span>
         </div>
       ) : null}
 
