@@ -246,50 +246,25 @@ function parseSRT(srt) {
     if (!time) return null;
     const start = +time[1]*3600 + +time[2]*60 + +time[3] + +time[4]/1000;
     const end   = +time[5]*3600 + +time[6]*60 + +time[7] + +time[8]/1000;
-    const text = lines.slice(2).join(' ');
+    const text = lines.slice(2).join(' ').replace(/<[^>]+>/g, '');
     return { start, end, text };
   }).filter(Boolean);
 }
 
 function Player({ series, episode, onClose, onNext, appLang, t }) {
+  const videoRef = useRef(null);
+  const hlsRef = useRef(null);
+  const controlTimer = useRef(null);
   const [showControls, setShowControls] = useState(true);
   const [currentSub, setCurrentSub] = useState('');
   const [srtData, setSrtData] = useState([]);
-  const [subLang, setSubLang] = useLS("zd_sublang", appLang);
-  const videoRef = useRef(null);
-  const timeRef = useRef(0);
+  const [subLang] = useLS("zd_sublang", appLang);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-  const bunnyUrl = getBunnyUrl(series.id, episode);
+  const videoId = VIDEO_MAP[series.id]?.[episode];
+  const hlsUrl = videoId ? `https://vz-433c2f1e-a5b.b-cdn.net/${videoId}/playlist.m3u8` : null;
   const subUrl = getSubtitleUrl(series.id, episode, subLang);
-
-  // Загружаем SRT файл
-  useEffect(() => {
-    if (!subUrl) return;
-    fetch(subUrl)
-      .then(r => r.text())
-      .then(text => setSrtData(parseSRT(text)))
-      .catch(() => {});
-  }, [subUrl]);
-
-  // Синхронизируем субтитры с временем через postMessage от Bunny
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.data?.event === 'timeupdate') {
-        const t = e.data.seconds || 0;
-        timeRef.current = t;
-        const sub = srtData.find(s => t >= s.start && t <= s.end);
-        setCurrentSub(sub ? sub.text : '');
-      }
-    };
-    window.addEventListener('message', handler);
-    return () => window.removeEventListener('message', handler);
-  }, [srtData]);
-
-  // Прячем кнопки через 3 секунды
-  useEffect(() => {
-    const timer = setTimeout(() => setShowControls(false), 3000);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Блокируем скролл
   useEffect(() => {
@@ -303,95 +278,136 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
     };
   }, []);
 
+  // HLS плеер
+  useEffect(() => {
+    if (!hlsUrl || !videoRef.current) return;
+    const video = videoRef.current;
+
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = hlsUrl;
+      video.play().catch(() => {});
+    } else {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js';
+      script.onload = () => {
+        if (window.Hls?.isSupported()) {
+          const hls = new window.Hls({ enableWorker: false });
+          hls.loadSource(hlsUrl);
+          hls.attachMedia(video);
+          hls.on(window.Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+          hlsRef.current = hls;
+        }
+      };
+      document.head.appendChild(script);
+    }
+    return () => { if (hlsRef.current) { hlsRef.current.destroy(); hlsRef.current = null; } };
+  }, [hlsUrl]);
+
+  // Загружаем субтитры
+  useEffect(() => {
+    if (!subUrl) return;
+    fetch(subUrl).then(r => r.text()).then(text => setSrtData(parseSRT(text))).catch(() => {});
+  }, [subUrl]);
+
+  // Синхронизируем субтитры
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const onTime = () => {
+      const ct = video.currentTime;
+      setProgress(ct / (video.duration || 1));
+      const sub = srtData.find(s => ct >= s.start && ct <= s.end);
+      setCurrentSub(sub ? sub.text : '');
+    };
+    video.addEventListener('timeupdate', onTime);
+    video.addEventListener('play', () => setIsPlaying(true));
+    video.addEventListener('pause', () => setIsPlaying(false));
+    return () => video.removeEventListener('timeupdate', onTime);
+  }, [srtData]);
+
+  // Авто-скрытие контролов
+  function showCtrl() {
+    setShowControls(true);
+    clearTimeout(controlTimer.current);
+    controlTimer.current = setTimeout(() => setShowControls(false), 3000);
+  }
+  useEffect(() => { showCtrl(); return () => clearTimeout(controlTimer.current); }, []);
+
+  function togglePlay() {
+    const v = videoRef.current;
+    if (!v) return;
+    v.paused ? v.play() : v.pause();
+    showCtrl();
+  }
+
   return (
-    <div
-      onClick={() => setShowControls(v => !v)}
-      style={{
-        position:"fixed", inset:0, background:"#000",
-        zIndex:200, overflow:"hidden",
-        // Блокируем скролл под плеером
-        touchAction:"none",
-      }}
-    >
-      {/* Плеер — весь экран */}
-      {bunnyUrl ? (
-        <iframe
-          src={bunnyUrl}
-          style={{
-            position:"absolute", inset:0,
-            width:"100%", height:"100%",
-            border:"none", display:"block",
-          }}
-          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
-          allowFullScreen
+    <div onClick={showCtrl} style={{ position:"fixed", inset:0, background:"#000", zIndex:200, overflow:"hidden" }}>
+
+      {/* Видео */}
+      {hlsUrl ? (
+        <video ref={videoRef}
+          style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"contain" }}
+          playsInline webkit-playsinline="true" preload="auto"
         />
       ) : (
-        <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-          <div style={{ fontSize:56, marginBottom:12 }}>🎬</div>
-          <div style={{ color:C.textMuted, fontSize:14 }}>Видео скоро появится</div>
+        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column" }}>
+          <div style={{ fontSize:56 }}>🎬</div>
+          <div style={{ color:C.textMuted, fontSize:14, marginTop:12 }}>Видео скоро появится</div>
         </div>
       )}
 
-      {/* Субтитры поверх видео */}
+      {/* Субтитры — белый текст с тенью, без фона, по центру нижней части */}
       {currentSub ? (
         <div style={{
-          position:"absolute",
-          bottom:"22%",
-          left:"5%", right:"5%",
-          textAlign:"center",
-          zIndex:5,
-          pointerEvents:"none",
+          position:"absolute", bottom:"25%", left:"6%", right:"6%",
+          textAlign:"center", zIndex:6, pointerEvents:"none",
         }}>
           <span style={{
-            color:"#fff",
-            fontSize:16,
-            fontWeight:600,
-            lineHeight:1.5,
-            textShadow:"0 1px 4px #000, 0 0 8px #000, 1px 1px 0 #000, -1px -1px 0 #000",
-            letterSpacing:0.3,
-          }}>
-            {currentSub}
-          </span>
+            color:"#fff", fontSize:17, fontWeight:700, lineHeight:1.5,
+            textShadow:"0 0 8px #000,0 0 8px #000,1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000",
+          }}>{currentSub}</span>
         </div>
       ) : null}
 
-      {/* Контролы — появляются по тапу, исчезают через 3 сек */}
+      {/* Контролы */}
       <div style={{
         position:"absolute", inset:0, zIndex:10,
-        opacity: showControls ? 1 : 0,
-        transition:"opacity 0.3s",
+        opacity: showControls ? 1 : 0, transition:"opacity 0.3s",
         pointerEvents: showControls ? "auto" : "none",
       }}>
         {/* Шапка */}
         <div style={{
           position:"absolute", top:0, left:0, right:0,
           background:"linear-gradient(rgba(0,0,0,0.7),transparent)",
-          padding:"16px",
-          display:"flex", alignItems:"center", gap:12,
+          padding:"16px", display:"flex", alignItems:"center", gap:12,
         }}>
           <button onClick={e => { e.stopPropagation(); onClose(); }} style={{
             background:"rgba(0,0,0,0.5)", border:"none", color:"#fff",
             borderRadius:"50%", width:40, height:40,
-            display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0,
           }}><IcoClose/></button>
-          <span style={{ color:"#fff", fontSize:13, fontWeight:600 }}>
-            {series.title} — {t.episode} {episode}
-          </span>
+          <span style={{ color:"#fff", fontSize:13, fontWeight:600 }}>{series.title} — {t.episode} {episode}</span>
         </div>
 
-        {/* Кнопка следующая серия */}
-        <div style={{
-          position:"absolute", bottom:0, left:0, right:0,
-          background:"linear-gradient(transparent,rgba(0,0,0,0.8))",
-          padding:"40px 16px 20px",
-        }}>
+        {/* Play/Pause */}
+        <button onClick={e => { e.stopPropagation(); togglePlay(); }} style={{
+          position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)",
+          background:"rgba(0,0,0,0.5)", border:"none", color:"#fff",
+          borderRadius:"50%", width:64, height:64,
+          display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:24,
+        }}>{isPlaying ? "⏸" : "▶"}</button>
+
+        {/* Прогресс */}
+        <div style={{ position:"absolute", bottom:80, left:16, right:16, height:3, background:"rgba(255,255,255,0.3)", borderRadius:2 }}>
+          <div style={{ width:`${progress*100}%`, height:"100%", background:C.accent, borderRadius:2 }}/>
+        </div>
+
+        {/* Следующая серия */}
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,rgba(0,0,0,0.8))", padding:"30px 16px 20px" }}>
           <button onClick={e => { e.stopPropagation(); onNext(); }} style={{
-            width:"100%", background:C.accent, color:"#fff",
-            border:"none", borderRadius:10, padding:"13px",
-            fontSize:15, fontWeight:700, cursor:"pointer",
-          }}>
-            {t.next}
-          </button>
+            width:"100%", background:C.accent, color:"#fff", border:"none",
+            borderRadius:10, padding:"13px", fontSize:15, fontWeight:700, cursor:"pointer",
+          }}>{t.next}</button>
         </div>
       </div>
     </div>
