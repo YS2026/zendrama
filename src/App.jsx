@@ -86,7 +86,7 @@ const UI_TEXT = {
 const SUBTITLES_MAP = {
   13: {
     1: {
-      en: "https://iframe.mediadelivery.net/embed/655429/ea227189-106a-45c7-8199-323b22b2912a/captions/en.srt",
+      en: "https://iframe.mediadelivery.net/embed/655429/a04c2a44-9917-42be-a654-1bd47a587cb6/captions/en.srt",
     }
   }
 };
@@ -226,14 +226,14 @@ const BUNNY_LIBRARY_ID = "655429";
 // Добавляй новые видео сюда после загрузки в Bunny
 const VIDEO_MAP = {
   13: {
-    1: "ea227189-106a-45c7-8199-323b22b2912a", // Власть и любовь — Серия 1
+    1: "a04c2a44-9917-42be-a654-1bd47a587cb6", // Власть и любовь — Серия 1
   },
 };
 
 function getBunnyUrl(seriesId, episode) {
   const videoId = VIDEO_MAP[seriesId]?.[episode];
   if (!videoId) return null;
-  return `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${videoId}?autoplay=true&loop=false&muted=false&preload=true`;
+  return `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${videoId}?autoplay=true&loop=false&muted=false&preload=true&captions=true`;
 }
 
 // ─── Player ───────────────────────────────────────────────────────────────────
