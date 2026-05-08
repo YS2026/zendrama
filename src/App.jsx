@@ -248,68 +248,50 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
   const subLangs = LANGUAGES.map(l => l.code);
 
   return (
-    <div style={{ position:"fixed", inset:0, background:"#000", zIndex:200, display:"flex", flexDirection:"column" }}>
-      {/* Header */}
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", position:"absolute", top:0, left:0, right:0, zIndex:10, background:"linear-gradient(rgba(0,0,0,0.7),transparent)" }}>
-        <button onClick={onClose} style={{ background:"rgba(0,0,0,0.5)", border:"none", color:"#fff", cursor:"pointer", borderRadius:"50%", width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center" }}><IcoClose/></button>
-        <span style={{ color:"#fff", fontSize:13, fontWeight:600 }}>{series.title} — {t.episode} {episode}</span>
-        <div style={{ width:36 }}/>
-      </div>
+    <div style={{ position:"fixed", inset:0, background:"#000", zIndex:200 }}>
+      {/* Кнопка закрыть */}
+      <button onClick={onClose} style={{
+        position:"absolute", top:16, left:16, zIndex:10,
+        background:"rgba(0,0,0,0.6)", border:"none", color:"#fff",
+        cursor:"pointer", borderRadius:"50%", width:40, height:40,
+        display:"flex", alignItems:"center", justifyContent:"center",
+      }}><IcoClose/></button>
 
-      {/* Video — полный экран */}
-      <div style={{ position:"absolute", inset:0, background:"#000" }}>
-        {bunnyUrl ? (
-          <iframe
-            src={bunnyUrl}
-            style={{ position:"absolute", inset:0, width:"100%", height:"100%", border:"none" }}
-            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
-            allowFullScreen
-          />
-        ) : (
-          <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-            <div style={{ fontSize:56, marginBottom:12 }}>🎬</div>
-            <div style={{ color:C.textMuted, fontSize:14 }}>Видео скоро появится</div>
-          </div>
-        )}
+      {/* Название */}
+      <div style={{
+        position:"absolute", top:16, left:0, right:0, zIndex:10,
+        textAlign:"center", color:"#fff", fontSize:13, fontWeight:600,
+        pointerEvents:"none",
+      }}>{series.title} — {t.episode} {episode}</div>
 
-        {/* Controls bar — снизу поверх видео */}
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,rgba(0,0,0,0.9))", padding:"30px 16px 20px" }}>
-
-          {/* CC Menu */}
-          {showSubMenu && (
-            <div style={{ background:"rgba(20,20,30,0.97)", borderRadius:12, padding:"8px 0", marginBottom:10 }}>
-              <div style={{ color:C.textMuted, fontSize:11, padding:"4px 14px 8px", fontWeight:700 }}>{t.subtitles}</div>
-              <div onClick={() => { setShowSubs(false); setShowSubMenu(false); }} style={{ padding:"8px 14px", color:!showSubs?C.accent:C.text, cursor:"pointer", fontSize:13 }}>
-                {!showSubs?"✓ ":""}{t.off}
-              </div>
-              {LANGUAGES.map(lang => (
-                <div key={lang.code} onClick={() => { setSubLang(lang.code); setShowSubs(true); setShowSubMenu(false); }} style={{ padding:"8px 14px", color:showSubs&&subLang===lang.code?C.accent:C.text, cursor:"pointer", fontSize:13, display:"flex", alignItems:"center", gap:8 }}>
-                  {showSubs&&subLang===lang.code?"✓ ":""}{lang.flag} {lang.name}
-                  {!getSubtitleUrl(series.id, episode, lang.code) && <span style={{ color:C.textDim, fontSize:10 }}>(скоро)</span>}
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div style={{ display:"flex", gap:10, marginBottom:10 }}>
-            <button onClick={() => setShowSubMenu(!showSubMenu)} style={{
-              background:showSubs?C.accent:"rgba(255,255,255,0.2)",
-              color:"#fff", border:"none", borderRadius:8,
-              padding:"7px 14px", fontSize:12, fontWeight:700, cursor:"pointer",
-              display:"flex", alignItems:"center", gap:6,
-            }}>
-              CC {showSubs ? LANGUAGES.find(l=>l.code===subLang)?.flag : ""}
-            </button>
-            <div style={{ background:"rgba(255,255,255,0.15)", borderRadius:8, padding:"7px 12px", fontSize:12, color:"#fff", display:"flex", alignItems:"center", gap:4 }}>
-              {LANGUAGES.find(l=>l.code===subLang)?.flag} {LANGUAGES.find(l=>l.code===subLang)?.name}
-            </div>
-          </div>
-
-          <button onClick={onNext} style={{ width:"100%", background:C.accent, color:"#fff", border:"none", borderRadius:10, padding:"11px", fontSize:14, fontWeight:700, cursor:"pointer" }}>
-            {t.next}
-          </button>
+      {/* Плеер — занимает весь экран */}
+      {bunnyUrl ? (
+        <iframe
+          src={bunnyUrl}
+          style={{
+            position:"absolute", inset:0,
+            width:"100%", height:"100%",
+            border:"none",
+          }}
+          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+        />
+      ) : (
+        <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ fontSize:56, marginBottom:12 }}>🎬</div>
+          <div style={{ color:C.textMuted, fontSize:14 }}>Видео скоро появится</div>
         </div>
-      </div>
+      )}
+
+      {/* Кнопка следующая серия */}
+      <button onClick={onNext} style={{
+        position:"absolute", bottom:20, left:16, right:16, zIndex:10,
+        background:C.accent, color:"#fff", border:"none",
+        borderRadius:10, padding:"13px", fontSize:15, fontWeight:700,
+        cursor:"pointer",
+      }}>
+        {t.next}
+      </button>
     </div>
   );
 }
