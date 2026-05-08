@@ -247,31 +247,32 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
 
   const subLangs = LANGUAGES.map(l => l.code);
 
+  const [showControls, setShowControls] = useState(true);
+
+  // Прячем кнопки через 3 секунды
+  useEffect(() => {
+    const timer = setTimeout(() => setShowControls(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div style={{ position:"fixed", inset:0, background:"#000", zIndex:200 }}>
-      {/* Кнопка закрыть */}
-      <button onClick={onClose} style={{
-        position:"absolute", top:16, left:16, zIndex:10,
-        background:"rgba(0,0,0,0.6)", border:"none", color:"#fff",
-        cursor:"pointer", borderRadius:"50%", width:40, height:40,
-        display:"flex", alignItems:"center", justifyContent:"center",
-      }}><IcoClose/></button>
-
-      {/* Название */}
-      <div style={{
-        position:"absolute", top:16, left:0, right:0, zIndex:10,
-        textAlign:"center", color:"#fff", fontSize:13, fontWeight:600,
-        pointerEvents:"none",
-      }}>{series.title} — {t.episode} {episode}</div>
-
-      {/* Плеер — занимает весь экран */}
+    <div
+      onClick={() => setShowControls(v => !v)}
+      style={{
+        position:"fixed", inset:0, background:"#000",
+        zIndex:200, overflow:"hidden",
+        // Блокируем скролл под плеером
+        touchAction:"none",
+      }}
+    >
+      {/* Плеер — весь экран */}
       {bunnyUrl ? (
         <iframe
           src={bunnyUrl}
           style={{
             position:"absolute", inset:0,
             width:"100%", height:"100%",
-            border:"none",
+            border:"none", display:"block",
           }}
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
@@ -283,15 +284,45 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
         </div>
       )}
 
-      {/* Кнопка следующая серия */}
-      <button onClick={onNext} style={{
-        position:"absolute", bottom:20, left:16, right:16, zIndex:10,
-        background:C.accent, color:"#fff", border:"none",
-        borderRadius:10, padding:"13px", fontSize:15, fontWeight:700,
-        cursor:"pointer",
+      {/* Контролы — появляются по тапу, исчезают через 3 сек */}
+      <div style={{
+        position:"absolute", inset:0, zIndex:10,
+        opacity: showControls ? 1 : 0,
+        transition:"opacity 0.3s",
+        pointerEvents: showControls ? "auto" : "none",
       }}>
-        {t.next}
-      </button>
+        {/* Шапка */}
+        <div style={{
+          position:"absolute", top:0, left:0, right:0,
+          background:"linear-gradient(rgba(0,0,0,0.7),transparent)",
+          padding:"16px",
+          display:"flex", alignItems:"center", gap:12,
+        }}>
+          <button onClick={e => { e.stopPropagation(); onClose(); }} style={{
+            background:"rgba(0,0,0,0.5)", border:"none", color:"#fff",
+            borderRadius:"50%", width:40, height:40,
+            display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
+          }}><IcoClose/></button>
+          <span style={{ color:"#fff", fontSize:13, fontWeight:600 }}>
+            {series.title} — {t.episode} {episode}
+          </span>
+        </div>
+
+        {/* Кнопка следующая серия */}
+        <div style={{
+          position:"absolute", bottom:0, left:0, right:0,
+          background:"linear-gradient(transparent,rgba(0,0,0,0.8))",
+          padding:"40px 16px 20px",
+        }}>
+          <button onClick={e => { e.stopPropagation(); onNext(); }} style={{
+            width:"100%", background:C.accent, color:"#fff",
+            border:"none", borderRadius:10, padding:"13px",
+            fontSize:15, fontWeight:700, cursor:"pointer",
+          }}>
+            {t.next}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -301,6 +332,12 @@ function SeriesModal({ series, onClose, vip, coins, setCoins, watchHistory, setW
   const [tab, setTab] = useState("episodes");
   const [playerEp, setPlayerEp] = useState(null);
   const [bookmarked, setBookmarked] = useLS(`bm_${series.id}`, false);
+
+  // Блокируем скролл когда открыт плеер или модал
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
 
   function handleUnlock(ep) {
     if (coins < 5) { alert("Недостаточно монет! Пополни кошелёк."); return; }
