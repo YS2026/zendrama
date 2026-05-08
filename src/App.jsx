@@ -27,6 +27,7 @@ const SERIES_DATA = [
   { id:10, title:"Королева читает мои мысли", genre:"Фэнтези", episodes:88, freeEpisodes:3, cover:"https://picsum.photos/seed/mindread/300/450", badge:"Эксклюзив", trending:null, rating:9.0, desc:"Необычный дар превращает жизнь в настоящее испытание..." },
   { id:11, title:"Яков и Алина: Пять лет тайной любви", genre:"Романтика", episodes:70, freeEpisodes:3, cover:"https://picsum.photos/seed/yakov/300/450", badge:"Хит", trending:null, rating:9.4, desc:"Тайная любовь, скрытая от всего мира..." },
   { id:12, title:"Пленница", genre:"Триллер", episodes:65, freeEpisodes:3, cover:"https://picsum.photos/seed/plen/300/450", badge:"18+", trending:null, rating:8.5, desc:"Побег из золотой клетки богатого особняка..." },
+  { id:13, title:"Власть и любовь", genre:"Романтика", episodes:50, freeEpisodes:3, cover:"https://picsum.photos/seed/vlast/300/450", badge:"Новинка", trending:null, rating:9.3, desc:"Молодая девушка становится ассистентом могущественного CEO, скрывающего тайные чувства..." },
 ];
 
 const GENRES = ["Все", "Романтика", "Фэнтези", "Драма", "Комедия", "Триллер", "Попаданчество"];
@@ -83,7 +84,7 @@ const UI_TEXT = {
 // Карта субтитров: seriesId -> { episode -> { langCode -> srt_url } }
 // Добавляй .srt файлы загруженные в Bunny Storage
 const SUBTITLES_MAP = {
-  2: {
+  13: {
     1: {
       en: "https://iframe.mediadelivery.net/embed/655429/ea227189-106a-45c7-8199-323b22b2912a/captions/en.srt",
     }
@@ -224,11 +225,8 @@ const BUNNY_LIBRARY_ID = "655429";
 // Карта серий: seriesId -> { episode -> videoId }
 // Добавляй новые видео сюда после загрузки в Bunny
 const VIDEO_MAP = {
-  1: {
-    1: "f3e962cb-828e-4771-888f-568df0f102d1", // Серия 1 — тестовое видео
-  },
-  2: {
-    1: "ea227189-106a-45c7-8199-323b22b2912a", // Серия 1 — новый сериал с субтитрами
+  13: {
+    1: "ea227189-106a-45c7-8199-323b22b2912a", // Власть и любовь — Серия 1
   },
 };
 
