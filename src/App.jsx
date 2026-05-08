@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const C = {
   bg: "#08090d",
@@ -48,6 +48,78 @@ function useLS(key, def) {
   const [v, setV] = useState(() => { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : def; } catch { return def; } });
   const set = (x) => { setV(x); try { localStorage.setItem(key, JSON.stringify(x)); } catch {} };
   return [v, set];
+}
+
+// ─── Языковая система ─────────────────────────────────────────────────────────
+const LANGUAGES = [
+  { code:"ru", flag:"🇷🇺", name:"Русский",    subLang:"ru" },
+  { code:"en", flag:"🇬🇧", name:"English",    subLang:"en" },
+  { code:"th", flag:"🇹🇭", name:"ภาษาไทย",   subLang:"th" },
+  { code:"zh", flag:"🇨🇳", name:"中文",        subLang:"zh" },
+  { code:"de", flag:"🇩🇪", name:"Deutsch",    subLang:"de" },
+  { code:"fr", flag:"🇫🇷", name:"Français",   subLang:"fr" },
+];
+
+// Определяем язык браузера/региона автоматически
+function detectLanguage() {
+  try {
+    const saved = localStorage.getItem("zd_lang");
+    if (saved) return saved;
+    const browserLang = navigator.language?.split("-")[0] || "ru";
+    const found = LANGUAGES.find(l => l.code === browserLang);
+    return found ? found.code : "ru";
+  } catch { return "ru"; }
+}
+
+const UI_TEXT = {
+  ru: { home:"Главная", watch:"Смотреть", profile:"Профиль", search:"Найти сериал...", trending:"🔥 В тренде", all:"⭐ Все сериалы", continueW:"▶ Продолжить", episodes:"Серии", desc:"Описание", series:"серий", free:"бесплатно", premium:"Premium", wallet:"Мой кошелёк", topup:"Пополнить", history:"История просмотров", bookmarks:"Закладки", bonuses:"Центр бонусов", subtitles:"Субтитры", off:"Выкл", language:"Язык", episode:"Серия", next:"Следующая серия →", shop:"Магазин", coins:"Монеты", connect:"Подключить →", genres:["Все","Романтика","Фэнтези","Драма","Комедия","Триллер","Попаданчество"] },
+  en: { home:"Home", watch:"Watch", profile:"Profile", search:"Search series...", trending:"🔥 Trending", all:"⭐ All Series", continueW:"▶ Continue", episodes:"Episodes", desc:"Description", series:"episodes", free:"free", premium:"Premium", wallet:"My Wallet", topup:"Top Up", history:"Watch History", bookmarks:"Bookmarks", bonuses:"Bonus Center", subtitles:"Subtitles", off:"Off", language:"Language", episode:"Episode", next:"Next Episode →", shop:"Shop", coins:"Coins", connect:"Subscribe →", genres:["All","Romance","Fantasy","Drama","Comedy","Thriller","Isekai"] },
+  th: { home:"หน้าหลัก", watch:"ดู", profile:"โปรไฟล์", search:"ค้นหาซีรีส์...", trending:"🔥 ยอดนิยม", all:"⭐ ซีรีส์ทั้งหมด", continueW:"▶ ดูต่อ", episodes:"ตอน", desc:"คำอธิบาย", series:"ตอน", free:"ฟรี", premium:"พรีเมียม", wallet:"กระเป๋าเงิน", topup:"เติมเงิน", history:"ประวัติการดู", bookmarks:"บุ๊กมาร์ก", bonuses:"ศูนย์โบนัส", subtitles:"คำบรรยาย", off:"ปิด", language:"ภาษา", episode:"ตอนที่", next:"ตอนถัดไป →", shop:"ร้านค้า", coins:"เหรียญ", connect:"สมัคร →", genres:["ทั้งหมด","โรแมนติก","แฟนตาซี","ดราม่า","ตลก","ระทึกขวัญ","อิเซไค"] },
+  zh: { home:"首页", watch:"观看", profile:"我的", search:"搜索剧集...", trending:"🔥 热门", all:"⭐ 全部剧集", continueW:"▶ 继续观看", episodes:"集数", desc:"简介", series:"集", free:"免费", premium:"会员", wallet:"我的钱包", topup:"充值", history:"观看历史", bookmarks:"收藏", bonuses:"奖励中心", subtitles:"字幕", off:"关闭", language:"语言", episode:"第", next:"下一集 →", shop:"商城", coins:"金币", connect:"订阅 →", genres:["全部","爱情","奇幻","剧情","喜剧","悬疑","穿越"] },
+  de: { home:"Startseite", watch:"Ansehen", profile:"Profil", search:"Serie suchen...", trending:"🔥 Trends", all:"⭐ Alle Serien", continueW:"▶ Weiterschauen", episodes:"Folgen", desc:"Beschreibung", series:"Folgen", free:"kostenlos", premium:"Premium", wallet:"Mein Wallet", topup:"Aufladen", history:"Verlauf", bookmarks:"Lesezeichen", bonuses:"Bonuszentrum", subtitles:"Untertitel", off:"Aus", language:"Sprache", episode:"Folge", next:"Nächste Folge →", shop:"Shop", coins:"Münzen", connect:"Abonnieren →", genres:["Alle","Romanze","Fantasy","Drama","Komödie","Thriller","Isekai"] },
+  fr: { home:"Accueil", watch:"Regarder", profile:"Profil", search:"Chercher une série...", trending:"🔥 Tendances", all:"⭐ Toutes les séries", continueW:"▶ Continuer", episodes:"Épisodes", desc:"Description", series:"épisodes", free:"gratuit", premium:"Premium", wallet:"Mon portefeuille", topup:"Recharger", history:"Historique", bookmarks:"Favoris", bonuses:"Centre bonus", subtitles:"Sous-titres", off:"Désactivé", language:"Langue", episode:"Épisode", next:"Épisode suivant →", shop:"Boutique", coins:"Pièces", connect:"S'abonner →", genres:["Tous","Romance","Fantasy","Drame","Comédie","Thriller","Isekai"] },
+};
+
+// Карта субтитров: seriesId -> { episode -> { langCode -> srt_url } }
+// Добавляй .srt файлы загруженные в Bunny Storage
+const SUBTITLES_MAP = {
+  1: {
+    1: {
+      ru: null, // "https://your-bunny-storage.b-cdn.net/subs/s1e1_ru.srt"
+      en: null,
+      th: null,
+    }
+  }
+};
+
+function getSubtitleUrl(seriesId, episode, langCode) {
+  return SUBTITLES_MAP[seriesId]?.[episode]?.[langCode] || null;
+}
+
+// ─── Language Picker Modal ────────────────────────────────────────────────────
+function LangPicker({ current, onSelect, onClose, t }) {
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:200, display:"flex", alignItems:"flex-end" }}>
+      <div style={{ width:"100%", background:C.card, borderRadius:"20px 20px 0 0", padding:"20px 16px 32px" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
+          <div style={{ color:C.text, fontWeight:800, fontSize:16 }}>{t.language}</div>
+          <button onClick={onClose} style={{ background:"none", border:"none", color:C.textMuted, cursor:"pointer" }}><IcoClose/></button>
+        </div>
+        {LANGUAGES.map(lang => (
+          <div key={lang.code} onClick={() => { onSelect(lang.code); onClose(); }} style={{
+            display:"flex", alignItems:"center", gap:14, padding:"12px 8px",
+            borderRadius:10, cursor:"pointer", marginBottom:4,
+            background:current===lang.code?`${C.accent}18`:"transparent",
+            border:`1px solid ${current===lang.code?C.accent:"transparent"}`,
+          }}>
+            <span style={{ fontSize:24 }}>{lang.flag}</span>
+            <span style={{ color:C.text, fontSize:15 }}>{lang.name}</span>
+            {current===lang.code && <span style={{ marginLeft:"auto", color:C.accent }}>✓</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
@@ -166,17 +238,26 @@ function getBunnyUrl(seriesId, episode) {
 }
 
 // ─── Player ───────────────────────────────────────────────────────────────────
-function Player({ series, episode, onClose, onNext }) {
+function Player({ series, episode, onClose, onNext, appLang, t }) {
+  const [showSubs, setShowSubs] = useState(true);
+  const [subLang, setSubLang] = useLS("zd_sublang", appLang);
+  const [showSubMenu, setShowSubMenu] = useState(false);
+
   const bunnyUrl = getBunnyUrl(series.id, episode);
+  const subUrl = getSubtitleUrl(series.id, episode, subLang);
+
+  const subLangs = LANGUAGES.map(l => l.code);
 
   return (
     <div style={{ position:"fixed", inset:0, background:"#000", zIndex:100, display:"flex", flexDirection:"column" }}>
+      {/* Header */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", position:"absolute", top:0, left:0, right:0, zIndex:10, background:"linear-gradient(#000a,transparent)" }}>
         <button onClick={onClose} style={{ background:"none", border:"none", color:"#fff", cursor:"pointer" }}><IcoClose/></button>
-        <span style={{ color:"#fff", fontSize:13 }}>{series.title} — Серия {episode}</span>
+        <span style={{ color:"#fff", fontSize:13 }}>{series.title} — {t.episode} {episode}</span>
         <div style={{ width:22 }}/>
       </div>
 
+      {/* Video */}
       <div style={{ flex:1, position:"relative", background:"#000" }}>
         {bunnyUrl ? (
           <iframe
@@ -189,13 +270,56 @@ function Player({ series, episode, onClose, onNext }) {
           <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
             <div style={{ fontSize:56, marginBottom:12 }}>🎬</div>
             <div style={{ color:C.textMuted, fontSize:14 }}>Видео скоро появится</div>
-            <div style={{ color:C.textDim, fontSize:11, marginTop:4 }}>Загрузите серию в Bunny Stream</div>
           </div>
         )}
 
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent, #000a)", padding:"40px 16px 16px" }}>
+        {/* Subtitle overlay */}
+        {showSubs && subUrl && (
+          <div style={{ position:"absolute", bottom:80, left:16, right:16, textAlign:"center" }}>
+            <span style={{ background:"rgba(0,0,0,0.75)", color:"#fff", fontSize:15, fontWeight:600, padding:"4px 12px", borderRadius:6, lineHeight:1.8 }}>
+              Субтитры загружены ✓
+            </span>
+          </div>
+        )}
+
+        {/* Controls bar */}
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,#000c)", padding:"30px 16px 16px" }}>
+
+          {/* CC Menu */}
+          {showSubMenu && (
+            <div style={{ background:C.card, borderRadius:12, padding:"8px 0", marginBottom:10 }}>
+              <div style={{ color:C.textMuted, fontSize:11, padding:"4px 14px 8px", fontWeight:700 }}>{t.subtitles}</div>
+              <div onClick={() => { setShowSubs(false); setShowSubMenu(false); }} style={{ padding:"8px 14px", color:!showSubs?C.accent:C.text, cursor:"pointer", fontSize:13 }}>
+                {!showSubs?"✓ ":""}{t.off}
+              </div>
+              {LANGUAGES.map(lang => (
+                <div key={lang.code} onClick={() => { setSubLang(lang.code); setShowSubs(true); setShowSubMenu(false); }} style={{ padding:"8px 14px", color:showSubs&&subLang===lang.code?C.accent:C.text, cursor:"pointer", fontSize:13, display:"flex", alignItems:"center", gap:8 }}>
+                  {showSubs&&subLang===lang.code?"✓ ":""}{lang.flag} {lang.name}
+                  {!getSubtitleUrl(series.id, episode, lang.code) && <span style={{ color:C.textDim, fontSize:10 }}>(скоро)</span>}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div style={{ display:"flex", gap:10, marginBottom:10 }}>
+            {/* CC Button */}
+            <button onClick={() => setShowSubMenu(!showSubMenu)} style={{
+              background:showSubs?C.accent:"rgba(255,255,255,0.15)",
+              color:"#fff", border:"none", borderRadius:8,
+              padding:"7px 14px", fontSize:12, fontWeight:700, cursor:"pointer",
+              display:"flex", alignItems:"center", gap:6,
+            }}>
+              CC {showSubs ? LANGUAGES.find(l=>l.code===subLang)?.flag : ""}
+            </button>
+
+            {/* Lang indicator */}
+            <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:8, padding:"7px 12px", fontSize:12, color:"#fff", display:"flex", alignItems:"center", gap:4 }}>
+              {LANGUAGES.find(l=>l.code===subLang)?.flag} {LANGUAGES.find(l=>l.code===subLang)?.name}
+            </div>
+          </div>
+
           <button onClick={onNext} style={{ width:"100%", background:C.accent, color:"#fff", border:"none", borderRadius:10, padding:"11px", fontSize:14, fontWeight:700, cursor:"pointer" }}>
-            Следующая серия →
+            {t.next}
           </button>
         </div>
       </div>
@@ -204,7 +328,7 @@ function Player({ series, episode, onClose, onNext }) {
 }
 
 // ─── Series Modal ─────────────────────────────────────────────────────────────
-function SeriesModal({ series, onClose, vip, coins, setCoins, watchHistory, setWatchHistory }) {
+function SeriesModal({ series, onClose, vip, coins, setCoins, watchHistory, setWatchHistory, appLang, t }) {
   const [tab, setTab] = useState("episodes");
   const [playerEp, setPlayerEp] = useState(null);
   const [bookmarked, setBookmarked] = useLS(`bm_${series.id}`, false);
@@ -220,7 +344,7 @@ function SeriesModal({ series, onClose, vip, coins, setCoins, watchHistory, setW
   }
 
   if (playerEp) return (
-    <Player series={series} episode={playerEp} onClose={() => setPlayerEp(null)}
+    <Player series={series} episode={playerEp} onClose={() => setPlayerEp(null)} appLang={appLang} t={t}
       onNext={() => {
         const next = playerEp + 1;
         if (next > series.episodes) return;
@@ -369,14 +493,20 @@ export default function App() {
   const [tab, setTab] = useState("home");
   const [selected, setSelected] = useState(null);
   const [showShop, setShowShop] = useState(false);
+  const [showLangPicker, setShowLangPicker] = useState(false);
   const [searchQ, setSearchQ] = useState("");
-  const [genre, setGenre] = useState("Все");
   const [coins, setCoins] = useLS("zd_coins", 9);
   const [vip, setVip] = useLS("zd_vip", false);
   const [history, setHistory] = useLS("zd_history", {});
+  const [appLang, setAppLang] = useLS("zd_lang", detectLanguage());
+
+  const t = UI_TEXT[appLang] || UI_TEXT.ru;
+  const [genre, setGenre] = useState(t.genres[0]);
+
+  // Обновляем жанр при смене языка
+  useEffect(() => { setGenre(t.genres[0]); }, [appLang]);
 
   const filtered = SERIES_DATA.filter(s =>
-    (genre === "Все" || s.genre === genre) &&
     s.title.toLowerCase().includes(searchQ.toLowerCase())
   );
   const trending = [...SERIES_DATA].filter(s => s.trending).sort((a,b) => a.trending - b.trending);
@@ -385,8 +515,9 @@ export default function App() {
   return (
     <div style={{ background:C.bg, minHeight:"100vh", maxWidth:430, margin:"0 auto", fontFamily:"system-ui,sans-serif", paddingBottom:70, color:C.text }}>
 
-      {selected && <SeriesModal series={selected} onClose={() => setSelected(null)} vip={vip} coins={coins} setCoins={setCoins} watchHistory={history} setWatchHistory={setHistory}/>}
-      {showShop && <ShopModal coins={coins} setCoins={setCoins} vip={vip} setVip={setVip} onClose={() => setShowShop(false)}/>}
+      {showLangPicker && <LangPicker current={appLang} onSelect={setAppLang} onClose={() => setShowLangPicker(false)} t={t}/>}
+      {selected && <SeriesModal series={selected} onClose={() => setSelected(null)} vip={vip} coins={coins} setCoins={setCoins} watchHistory={history} setWatchHistory={setHistory} appLang={appLang} t={t}/>}
+      {showShop && <ShopModal coins={coins} setCoins={setCoins} vip={vip} setVip={setVip} onClose={() => setShowShop(false)} t={t}/>}
 
       {/* ── HOME ─────────────────────────────────────────────────────────── */}
       {tab === "home" && (
@@ -395,7 +526,11 @@ export default function App() {
           <div style={{ padding:"14px 16px 10px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
             <ZenLogo size={26}/>
             <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-              {vip && <div style={{ color:C.accent, fontSize:11, fontWeight:700, background:`${C.accent}15`, borderRadius:20, padding:"4px 10px", border:`1px solid ${C.accent}35` }}>👑 Premium</div>}
+              {/* Lang switcher */}
+              <button onClick={() => setShowLangPicker(true)} style={{ background:C.card, border:`1px solid ${C.card2}`, borderRadius:20, padding:"5px 10px", fontSize:13, cursor:"pointer" }}>
+                {LANGUAGES.find(l=>l.code===appLang)?.flag}
+              </button>
+              {vip && <div style={{ color:C.accent, fontSize:11, fontWeight:700, background:`${C.accent}15`, borderRadius:20, padding:"4px 10px", border:`1px solid ${C.accent}35` }}>👑 {t.premium}</div>}
               <button onClick={() => setShowShop(true)} style={{ background:C.accent, color:"#fff", border:"none", borderRadius:20, padding:"5px 13px", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
                 <CoinIco/> {coins}
               </button>
@@ -550,11 +685,12 @@ export default function App() {
           </div>
 
           {[
-            { icon:<IcoHistory/>, label:"История просмотров", count:continueList.length },
-            { icon:<IcoBookmark f={false}/>, label:"Закладки" },
-            { icon:<IcoCrown/>, label:"Центр бонусов" },
+            { icon:<IcoHistory/>, label:t.history, count:continueList.length },
+            { icon:<IcoBookmark f={false}/>, label:t.bookmarks },
+            { icon:<IcoCrown/>, label:t.bonuses },
+            { icon:<span style={{fontSize:18}}>{LANGUAGES.find(l=>l.code===appLang)?.flag}</span>, label:t.language, action:() => setShowLangPicker(true) },
           ].map(item => (
-            <div key={item.label} style={{ background:C.card, borderRadius:12, padding:"14px 16px", marginBottom:10, display:"flex", alignItems:"center", gap:12, cursor:"pointer" }}>
+            <div key={item.label} onClick={item.action} style={{ background:C.card, borderRadius:12, padding:"14px 16px", marginBottom:10, display:"flex", alignItems:"center", gap:12, cursor:"pointer" }}>
               <div style={{ color:C.textMuted }}>{item.icon}</div>
               <div style={{ flex:1, color:C.text, fontSize:14 }}>{item.label}</div>
               {item.count !== undefined && <span style={{ background:C.accent, color:"#fff", borderRadius:20, padding:"2px 8px", fontSize:11, fontWeight:700 }}>{item.count}</span>}
@@ -567,9 +703,9 @@ export default function App() {
       {/* ── Bottom Nav ───────────────────────────────────────────────────── */}
       <div style={{ position:"fixed", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:430, background:"#0d0e14", borderTop:`1px solid ${C.card2}`, display:"flex" }}>
         {[
-          { id:"home",    icon:<IcoHome/>,  label:"Главная" },
-          { id:"watch",   icon:<IcoPlay/>,  label:"Смотреть" },
-          { id:"profile", icon:<IcoUser/>,  label:"Профиль" },
+          { id:"home",    icon:<IcoHome/>,  label:t.home },
+          { id:"watch",   icon:<IcoPlay/>,  label:t.watch },
+          { id:"profile", icon:<IcoUser/>,  label:t.profile },
         ].map(item => (
           <button key={item.id} onClick={() => setTab(item.id)} style={{ flex:1, background:"none", border:"none", padding:"10px 0 8px", color:tab===item.id?C.accent:C.textMuted, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:3 }}>
             {item.icon}
