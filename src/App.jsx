@@ -83,11 +83,9 @@ const UI_TEXT = {
 // Карта субтитров: seriesId -> { episode -> { langCode -> srt_url } }
 // Добавляй .srt файлы загруженные в Bunny Storage
 const SUBTITLES_MAP = {
-  1: {
+  2: {
     1: {
-      ru: null, // "https://your-bunny-storage.b-cdn.net/subs/s1e1_ru.srt"
-      en: null,
-      th: null,
+      en: "https://iframe.mediadelivery.net/embed/655429/ea227189-106a-45c7-8199-323b22b2912a/captions/en.srt",
     }
   }
 };
@@ -227,7 +225,10 @@ const BUNNY_LIBRARY_ID = "655429";
 // Добавляй новые видео сюда после загрузки в Bunny
 const VIDEO_MAP = {
   1: {
-    1: "f3e962cb-828e-4771-888f-568df0f102d1", // Серия 1 — реальное видео
+    1: "f3e962cb-828e-4771-888f-568df0f102d1", // Серия 1 — тестовое видео
+  },
+  2: {
+    1: "ea227189-106a-45c7-8199-323b22b2912a", // Серия 1 — новый сериал с субтитрами
   },
 };
 
