@@ -389,13 +389,41 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
           <span style={{ color:"#fff", fontSize:13, fontWeight:600 }}>{series.title} — {t.episode} {episode}</span>
         </div>
 
-        {/* Play/Pause */}
-        <button onClick={e => { e.stopPropagation(); togglePlay(); }} style={{
-          position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)",
-          background:"rgba(0,0,0,0.5)", border:"none", color:"#fff",
-          borderRadius:"50%", width:64, height:64,
-          display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:24,
-        }}>{isPlaying ? "⏸" : "▶"}</button>
+        {/* Play/Pause + перемотка */}
+        <div style={{
+          position:"absolute", top:"50%", left:"50%",
+          transform:"translate(-50%,-50%)",
+          display:"flex", alignItems:"center", gap:32,
+        }}>
+          {/* -10 сек */}
+          <button onClick={e => { e.stopPropagation(); const v=videoRef.current; if(v) v.currentTime=Math.max(0,v.currentTime-10); showCtrl(); }} style={{
+            background:"rgba(0,0,0,0.5)", border:"none", color:"#fff",
+            borderRadius:"50%", width:50, height:50,
+            display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
+            fontSize:11, fontWeight:700, flexDirection:"column", gap:1,
+          }}>
+            <span style={{fontSize:18}}>↺</span>
+            <span>10</span>
+          </button>
+
+          {/* Play/Pause */}
+          <button onClick={e => { e.stopPropagation(); togglePlay(); }} style={{
+            background:"rgba(0,0,0,0.6)", border:"2px solid rgba(255,255,255,0.4)", color:"#fff",
+            borderRadius:"50%", width:64, height:64,
+            display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:24,
+          }}>{isPlaying ? "⏸" : "▶"}</button>
+
+          {/* +10 сек */}
+          <button onClick={e => { e.stopPropagation(); const v=videoRef.current; if(v) v.currentTime=Math.min(v.duration||999,v.currentTime+10); showCtrl(); }} style={{
+            background:"rgba(0,0,0,0.5)", border:"none", color:"#fff",
+            borderRadius:"50%", width:50, height:50,
+            display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
+            fontSize:11, fontWeight:700, flexDirection:"column", gap:1,
+          }}>
+            <span style={{fontSize:18}}>↻</span>
+            <span>10</span>
+          </button>
+        </div>
 
         {/* Прогресс */}
         <div style={{ position:"absolute", bottom:80, left:16, right:16, height:3, background:"rgba(255,255,255,0.3)", borderRadius:2 }}>
