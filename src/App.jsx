@@ -220,7 +220,7 @@ function EpRow({ ep, isLocked, coins, onUnlock, onWatch }) {
 }
 
 // ─── Bunny Stream Config ──────────────────────────────────────────────────────
-const BUNNY_LIBRARY_ID = "655429";
+const BUNNY_LIBRARY_ID = "656045";
 
 // Карта серий: seriesId -> { episode -> videoId }
 // Добавляй новые видео сюда после загрузки в Bunny
