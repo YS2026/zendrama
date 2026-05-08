@@ -248,21 +248,21 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
   const subLangs = LANGUAGES.map(l => l.code);
 
   return (
-    <div style={{ position:"fixed", inset:0, background:"#000", zIndex:100, display:"flex", flexDirection:"column" }}>
+    <div style={{ position:"fixed", inset:0, background:"#000", zIndex:200, display:"flex", flexDirection:"column" }}>
       {/* Header */}
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", position:"absolute", top:0, left:0, right:0, zIndex:10, background:"linear-gradient(#000a,transparent)" }}>
-        <button onClick={onClose} style={{ background:"none", border:"none", color:"#fff", cursor:"pointer" }}><IcoClose/></button>
-        <span style={{ color:"#fff", fontSize:13 }}>{series.title} — {t.episode} {episode}</span>
-        <div style={{ width:22 }}/>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", position:"absolute", top:0, left:0, right:0, zIndex:10, background:"linear-gradient(rgba(0,0,0,0.7),transparent)" }}>
+        <button onClick={onClose} style={{ background:"rgba(0,0,0,0.5)", border:"none", color:"#fff", cursor:"pointer", borderRadius:"50%", width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center" }}><IcoClose/></button>
+        <span style={{ color:"#fff", fontSize:13, fontWeight:600 }}>{series.title} — {t.episode} {episode}</span>
+        <div style={{ width:36 }}/>
       </div>
 
-      {/* Video */}
-      <div style={{ flex:1, position:"relative", background:"#000" }}>
+      {/* Video — полный экран */}
+      <div style={{ position:"absolute", inset:0, background:"#000" }}>
         {bunnyUrl ? (
           <iframe
             src={bunnyUrl}
             style={{ position:"absolute", inset:0, width:"100%", height:"100%", border:"none" }}
-            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
             allowFullScreen
           />
         ) : (
@@ -272,21 +272,12 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
           </div>
         )}
 
-        {/* Subtitle overlay */}
-        {showSubs && subUrl && (
-          <div style={{ position:"absolute", bottom:80, left:16, right:16, textAlign:"center" }}>
-            <span style={{ background:"rgba(0,0,0,0.75)", color:"#fff", fontSize:15, fontWeight:600, padding:"4px 12px", borderRadius:6, lineHeight:1.8 }}>
-              Субтитры загружены ✓
-            </span>
-          </div>
-        )}
-
-        {/* Controls bar */}
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,#000c)", padding:"30px 16px 16px" }}>
+        {/* Controls bar — снизу поверх видео */}
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,rgba(0,0,0,0.9))", padding:"30px 16px 20px" }}>
 
           {/* CC Menu */}
           {showSubMenu && (
-            <div style={{ background:C.card, borderRadius:12, padding:"8px 0", marginBottom:10 }}>
+            <div style={{ background:"rgba(20,20,30,0.97)", borderRadius:12, padding:"8px 0", marginBottom:10 }}>
               <div style={{ color:C.textMuted, fontSize:11, padding:"4px 14px 8px", fontWeight:700 }}>{t.subtitles}</div>
               <div onClick={() => { setShowSubs(false); setShowSubMenu(false); }} style={{ padding:"8px 14px", color:!showSubs?C.accent:C.text, cursor:"pointer", fontSize:13 }}>
                 {!showSubs?"✓ ":""}{t.off}
@@ -301,18 +292,15 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
           )}
 
           <div style={{ display:"flex", gap:10, marginBottom:10 }}>
-            {/* CC Button */}
             <button onClick={() => setShowSubMenu(!showSubMenu)} style={{
-              background:showSubs?C.accent:"rgba(255,255,255,0.15)",
+              background:showSubs?C.accent:"rgba(255,255,255,0.2)",
               color:"#fff", border:"none", borderRadius:8,
               padding:"7px 14px", fontSize:12, fontWeight:700, cursor:"pointer",
               display:"flex", alignItems:"center", gap:6,
             }}>
               CC {showSubs ? LANGUAGES.find(l=>l.code===subLang)?.flag : ""}
             </button>
-
-            {/* Lang indicator */}
-            <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:8, padding:"7px 12px", fontSize:12, color:"#fff", display:"flex", alignItems:"center", gap:4 }}>
+            <div style={{ background:"rgba(255,255,255,0.15)", borderRadius:8, padding:"7px 12px", fontSize:12, color:"#fff", display:"flex", alignItems:"center", gap:4 }}>
               {LANGUAGES.find(l=>l.code===subLang)?.flag} {LANGUAGES.find(l=>l.code===subLang)?.name}
             </div>
           </div>
