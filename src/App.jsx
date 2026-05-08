@@ -261,6 +261,30 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
   const [subLang] = useLS("zd_sublang", appLang);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [muted, setMuted] = useState(false);
+  const [quality, setQuality] = useState("Auto");
+  const [showQuality, setShowQuality] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [currentTime, setCurrentTime] = useState("0:00");
+  const [duration, setDuration] = useState("0:00");
+
+  function formatTime(s) {
+    if (!s || isNaN(s)) return "0:00";
+    const m = Math.floor(s/60);
+    const sec = Math.floor(s%60);
+    return `${m}:${sec.toString().padStart(2,'0')}`;
+  }
+
+  function toggleFullscreen() {
+    const el = document.documentElement;
+    if (!document.fullscreenElement) {
+      el.requestFullscreen?.() || el.webkitRequestFullscreen?.();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen?.() || document.webkitExitFullscreen?.();
+      setIsFullscreen(false);
+    }
+  }
 
   const videoId = VIDEO_MAP[series.id]?.[episode];
   const hlsUrl = videoId ? `https://vz-433c2f1e-a5b.b-cdn.net/${videoId}/playlist.m3u8` : null;
@@ -316,6 +340,8 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
     const onTime = () => {
       const ct = video.currentTime;
       setProgress(ct / (video.duration || 1));
+      setCurrentTime(formatTime(ct));
+      setDuration(formatTime(video.duration));
       const sub = srtData.find(s => ct >= s.start && ct <= s.end);
       setCurrentSub(sub ? sub.text : '');
     };
@@ -389,45 +415,118 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
           <span style={{ color:"#fff", fontSize:13, fontWeight:600 }}>{series.title} — {t.episode} {episode}</span>
         </div>
 
-        {/* Play/Pause + перемотка */}
+        {/* Play/Pause + перемотка — стеклянные кнопки */}
         <div style={{
           position:"absolute", top:"50%", left:"50%",
           transform:"translate(-50%,-50%)",
-          display:"flex", alignItems:"center", gap:32,
+          display:"flex", alignItems:"center", gap:28,
         }}>
           {/* -10 сек */}
           <button onClick={e => { e.stopPropagation(); const v=videoRef.current; if(v) v.currentTime=Math.max(0,v.currentTime-10); showCtrl(); }} style={{
-            background:"rgba(0,0,0,0.5)", border:"none", color:"#fff",
-            borderRadius:"50%", width:50, height:50,
-            display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
-            fontSize:11, fontWeight:700, flexDirection:"column", gap:1,
+            width:54, height:54, borderRadius:"50%", border:"none", cursor:"pointer",
+            background:"radial-gradient(circle at 35% 35%, rgba(255,255,255,0.35), rgba(255,255,255,0.08))",
+            backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)",
+            boxShadow:"0 4px 20px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -1px 1px rgba(0,0,0,0.3)",
+            color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:1,
           }}>
-            <span style={{fontSize:18}}>↺</span>
-            <span>10</span>
+            <span style={{fontSize:20, lineHeight:1}}>↺</span>
+            <span style={{fontSize:10, fontWeight:700}}>10</span>
           </button>
 
-          {/* Play/Pause */}
+          {/* Play/Pause — большая */}
           <button onClick={e => { e.stopPropagation(); togglePlay(); }} style={{
-            background:"rgba(0,0,0,0.6)", border:"2px solid rgba(255,255,255,0.4)", color:"#fff",
-            borderRadius:"50%", width:64, height:64,
-            display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:24,
+            width:70, height:70, borderRadius:"50%", border:"none", cursor:"pointer",
+            background:"radial-gradient(circle at 35% 30%, rgba(255,255,255,0.45), rgba(124,106,247,0.6))",
+            backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)",
+            boxShadow:"0 6px 30px rgba(124,106,247,0.6), inset 0 2px 2px rgba(255,255,255,0.5), inset 0 -2px 2px rgba(0,0,0,0.3)",
+            color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26,
           }}>{isPlaying ? "⏸" : "▶"}</button>
 
           {/* +10 сек */}
           <button onClick={e => { e.stopPropagation(); const v=videoRef.current; if(v) v.currentTime=Math.min(v.duration||999,v.currentTime+10); showCtrl(); }} style={{
-            background:"rgba(0,0,0,0.5)", border:"none", color:"#fff",
-            borderRadius:"50%", width:50, height:50,
-            display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
-            fontSize:11, fontWeight:700, flexDirection:"column", gap:1,
+            width:54, height:54, borderRadius:"50%", border:"none", cursor:"pointer",
+            background:"radial-gradient(circle at 35% 35%, rgba(255,255,255,0.35), rgba(255,255,255,0.08))",
+            backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)",
+            boxShadow:"0 4px 20px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -1px 1px rgba(0,0,0,0.3)",
+            color:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:1,
           }}>
-            <span style={{fontSize:18}}>↻</span>
-            <span>10</span>
+            <span style={{fontSize:20, lineHeight:1}}>↻</span>
+            <span style={{fontSize:10, fontWeight:700}}>10</span>
           </button>
         </div>
 
-        {/* Прогресс */}
-        <div style={{ position:"absolute", bottom:80, left:16, right:16, height:3, background:"rgba(255,255,255,0.3)", borderRadius:2 }}>
-          <div style={{ width:`${progress*100}%`, height:"100%", background:C.accent, borderRadius:2 }}/>
+        {/* Правый нижний угол — звук + фулскрин + качество */}
+        <div style={{
+          position:"absolute", bottom:90, right:16,
+          display:"flex", flexDirection:"column", alignItems:"center", gap:10,
+        }}>
+          {/* Качество */}
+          <button onClick={e => { e.stopPropagation(); setShowQuality(v=>!v); showCtrl(); }} style={{
+            background:"radial-gradient(circle at 35% 35%, rgba(255,255,255,0.3), rgba(0,0,0,0.4))",
+            backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)",
+            boxShadow:"0 4px 16px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.3)",
+            border:"none", color:"#fff", borderRadius:10, padding:"5px 10px",
+            fontSize:11, fontWeight:700, cursor:"pointer", letterSpacing:0.5,
+          }}>
+            {quality}
+          </button>
+
+          {/* Меню качества */}
+          {showQuality && (
+            <div style={{
+              position:"absolute", bottom:36, right:0,
+              background:"rgba(10,10,20,0.95)", borderRadius:10, overflow:"hidden",
+              boxShadow:"0 4px 20px rgba(0,0,0,0.6)",
+              border:"1px solid rgba(255,255,255,0.1)",
+            }}>
+              {["Auto","1080p","720p","480p"].map(q => (
+                <div key={q} onClick={e => { e.stopPropagation(); setQuality(q); setShowQuality(false); showCtrl(); }} style={{
+                  padding:"8px 16px", color: quality===q ? C.accent : "#fff",
+                  fontSize:13, cursor:"pointer", whiteSpace:"nowrap",
+                  background: quality===q ? `${C.accent}18` : "transparent",
+                }}>{q}</div>
+              ))}
+            </div>
+          )}
+
+          {/* Звук */}
+          <button onClick={e => { e.stopPropagation(); setMuted(v=>{ const nm=!v; if(videoRef.current) videoRef.current.muted=nm; return nm; }); showCtrl(); }} style={{
+            width:44, height:44, borderRadius:"50%", border:"none", cursor:"pointer",
+            background:"radial-gradient(circle at 35% 35%, rgba(255,255,255,0.35), rgba(255,255,255,0.08))",
+            backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)",
+            boxShadow:"0 4px 16px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4)",
+            color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18,
+          }}>{muted ? "🔇" : "🔊"}</button>
+
+          {/* Полный экран */}
+          <button onClick={e => { e.stopPropagation(); toggleFullscreen(); showCtrl(); }} style={{
+            width:44, height:44, borderRadius:"50%", border:"none", cursor:"pointer",
+            background:"radial-gradient(circle at 35% 35%, rgba(255,255,255,0.35), rgba(255,255,255,0.08))",
+            backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)",
+            boxShadow:"0 4px 16px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4)",
+            color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18,
+          }}>{isFullscreen ? "⤡" : "⤢"}</button>
+        </div>
+
+        {/* Время + прогресс */}
+        <div style={{ position:"absolute", bottom:80, left:16, right:16 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+            <span style={{ color:"rgba(255,255,255,0.8)", fontSize:12 }}>{currentTime}</span>
+            <span style={{ color:"rgba(255,255,255,0.5)", fontSize:12 }}>{duration}</span>
+          </div>
+          <div style={{ height:3, background:"rgba(255,255,255,0.2)", borderRadius:2, cursor:"pointer" }}
+            onClick={e => {
+              e.stopPropagation();
+              const rect = e.currentTarget.getBoundingClientRect();
+              const pct = (e.clientX - rect.left) / rect.width;
+              const v = videoRef.current;
+              if (v) v.currentTime = pct * v.duration;
+            }}
+          >
+            <div style={{ width:`${progress*100}%`, height:"100%", background:C.accent, borderRadius:2, position:"relative" }}>
+              <div style={{ position:"absolute", right:-4, top:-3, width:9, height:9, borderRadius:"50%", background:"#fff", boxShadow:`0 0 6px ${C.accent}` }}/>
+            </div>
+          </div>
         </div>
 
         {/* Следующая серия */}
