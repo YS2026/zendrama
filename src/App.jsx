@@ -86,7 +86,7 @@ const UI_TEXT = {
 const SUBTITLES_MAP = {
   13: {
     1: {
-      en: "https://iframe.mediadelivery.net/embed/655429/a04c2a44-9917-42be-a654-1bd47a587cb6/captions/en.srt",
+      en: "https://zendrama-subs.b-cdn.net/seria_001_clean.srt",
     }
   }
 };
