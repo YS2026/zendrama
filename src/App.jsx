@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const C = {
   bg: "#08090d",
@@ -237,22 +237,70 @@ function getBunnyUrl(seriesId, episode) {
 }
 
 // ─── Player ───────────────────────────────────────────────────────────────────
+function parseSRT(srt) {
+  const blocks = srt.trim().split(/\n\n+/);
+  return blocks.map(block => {
+    const lines = block.trim().split('\n');
+    if (lines.length < 3) return null;
+    const time = lines[1].match(/(\d+):(\d+):(\d+)[,.](\d+) --> (\d+):(\d+):(\d+)[,.](\d+)/);
+    if (!time) return null;
+    const start = +time[1]*3600 + +time[2]*60 + +time[3] + +time[4]/1000;
+    const end   = +time[5]*3600 + +time[6]*60 + +time[7] + +time[8]/1000;
+    const text = lines.slice(2).join(' ');
+    return { start, end, text };
+  }).filter(Boolean);
+}
+
 function Player({ series, episode, onClose, onNext, appLang, t }) {
-  const [showSubs, setShowSubs] = useState(true);
+  const [showControls, setShowControls] = useState(true);
+  const [currentSub, setCurrentSub] = useState('');
+  const [srtData, setSrtData] = useState([]);
   const [subLang, setSubLang] = useLS("zd_sublang", appLang);
-  const [showSubMenu, setShowSubMenu] = useState(false);
+  const videoRef = useRef(null);
+  const timeRef = useRef(0);
 
   const bunnyUrl = getBunnyUrl(series.id, episode);
   const subUrl = getSubtitleUrl(series.id, episode, subLang);
 
-  const subLangs = LANGUAGES.map(l => l.code);
+  // Загружаем SRT файл
+  useEffect(() => {
+    if (!subUrl) return;
+    fetch(subUrl)
+      .then(r => r.text())
+      .then(text => setSrtData(parseSRT(text)))
+      .catch(() => {});
+  }, [subUrl]);
 
-  const [showControls, setShowControls] = useState(true);
+  // Синхронизируем субтитры с временем через postMessage от Bunny
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.data?.event === 'timeupdate') {
+        const t = e.data.seconds || 0;
+        timeRef.current = t;
+        const sub = srtData.find(s => t >= s.start && t <= s.end);
+        setCurrentSub(sub ? sub.text : '');
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [srtData]);
 
   // Прячем кнопки через 3 секунды
   useEffect(() => {
     const timer = setTimeout(() => setShowControls(false), 3000);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Блокируем скролл
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
   }, []);
 
   return (
@@ -283,6 +331,29 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
           <div style={{ color:C.textMuted, fontSize:14 }}>Видео скоро появится</div>
         </div>
       )}
+
+      {/* Субтитры поверх видео */}
+      {currentSub ? (
+        <div style={{
+          position:"absolute",
+          bottom:"22%",
+          left:"5%", right:"5%",
+          textAlign:"center",
+          zIndex:5,
+          pointerEvents:"none",
+        }}>
+          <span style={{
+            color:"#fff",
+            fontSize:16,
+            fontWeight:600,
+            lineHeight:1.5,
+            textShadow:"0 1px 4px #000, 0 0 8px #000, 1px 1px 0 #000, -1px -1px 0 #000",
+            letterSpacing:0.3,
+          }}>
+            {currentSub}
+          </span>
+        </div>
+      ) : null}
 
       {/* Контролы — появляются по тапу, исчезают через 3 сек */}
       <div style={{
