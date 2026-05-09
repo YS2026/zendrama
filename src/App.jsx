@@ -45,7 +45,7 @@ const LANGUAGES = [
 ];
 
 const BUNNY_LIBRARY_ID = "656045";
-const VIDEO_MAP = { 13: { 1: "a04c2a44-9917-42be-a654-1bd47a587cb6" } };
+const VIDEO_MAP = { 13: { 1: "34a6f8cb-821b-43b5-940e-23c56cce2cef" } };
 const SUBTITLES_MAP = {
   13: { 1: {
     ru: "https://zendrama-subs.b-cdn.net/seria_001_ru.srt",
