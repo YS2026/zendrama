@@ -7,13 +7,12 @@ const C = {
   jade: "#3ecf8e",
 };
 
-// ==================== ДАННЫЕ ====================
 const SERIES_DATA = [
   { id:1,  title:"Тайный миллионер",                   genre:"Романтика",     episodes:80, freeEpisodes:3, cover:"https://picsum.photos/seed/mill/300/450",    badge:"Эксклюзив", trending:1, rating:9.2, desc:"Девушка из бедной семьи случайно встречает скрытного миллиардера..." },
-  { id:2,  title:"Рождённый повелителем",               genre:"Фэнтези",       episodes:96, freeEpisodes:3, cover:"https://picsum.photos/seed/lord/300/450",    badge:"Эксклюзив", trending:4, rating:8.9, desc:"Древний правитель возрождается в современном мире..." },
+  { id:2,  title:"Рождённый повелителем",               genre:"Фэнтези",       episodes:96, freeEpisodes:3, cover:"https://picsum.photos/seed/lord/300/450",    badge:"Эксклюзив", trending:4, rating:8.9, desc:"Древний правитель возрождается в современном мире с магическими силами..." },
   { id:3,  title:"Муж-гендиректор меня баловал",        genre:"Романтика",     episodes:68, freeEpisodes:3, cover:"https://picsum.photos/seed/ceo/300/450",     badge:"Эксклюзив", trending:2, rating:9.5, desc:"Брак по договору превращается в настоящую любовь..." },
   { id:4,  title:"Тот самый мальчик",                   genre:"Романтика",     episodes:72, freeEpisodes:3, cover:"https://picsum.photos/seed/boy/300/450",     badge:"Эксклюзив", trending:5, rating:8.7, desc:"Первая любовь снова появляется спустя 10 лет..." },
-  { id:5,  title:"Телефон для невесты",                 genre:"Комедия",       episodes:58, freeEpisodes:3, cover:"https://picsum.photos/seed/phone/300/450",   badge:"Эксклюзив", trending:6, rating:8.4, desc:"Случайный обмен телефонами меняет судьбы..." },
+  { id:5,  title:"Телефон для невесты",                 genre:"Комедия",       episodes:58, freeEpisodes:3, cover:"https://picsum.photos/seed/phone/300/450",   badge:"Эксклюзив", trending:6, rating:8.4, desc:"Случайный обмен телефонами меняет судьбы двух незнакомцев..." },
   { id:6,  title:"Замуж за врага",                      genre:"Драма",         episodes:84, freeEpisodes:3, cover:"https://picsum.photos/seed/enemy/300/450",   badge:"Эксклюзив", trending:3, rating:9.1, desc:"Вынужденный союз с главным соперником семьи..." },
   { id:7,  title:"Эвелин и Гари: Новая жизнь",          genre:"Попаданчество", episodes:93, freeEpisodes:3, cover:"https://picsum.photos/seed/evelin/300/450",  badge:"Хит",       trending:null, rating:9.3, desc:"Современная женщина попадает в древний Китай..." },
   { id:8,  title:"Двойная жизнь королевы бизнеса",      genre:"Драма",         episodes:76, freeEpisodes:3, cover:"https://picsum.photos/seed/queen2/300/450",  badge:"Новинка",   trending:null, rating:8.6, desc:"Успешная бизнес-леди скрывает тёмное прошлое..." },
@@ -22,14 +21,12 @@ const SERIES_DATA = [
   { id:11, title:"Яков и Алина: Пять лет тайной любви", genre:"Романтика",     episodes:70, freeEpisodes:3, cover:"https://picsum.photos/seed/yakov/300/450",   badge:"Хит",       trending:null, rating:9.4, desc:"Тайная любовь, скрытая от всего мира..." },
   { id:12, title:"Пленница",                            genre:"Триллер",       episodes:65, freeEpisodes:3, cover:"https://picsum.photos/seed/plen/300/450",    badge:"18+",       trending:null, rating:8.5, desc:"Побег из золотой клетки богатого особняка..." },
   { id:13, title:"Власть и любовь",                     genre:"Романтика",     episodes:50, freeEpisodes:3, cover:"https://picsum.photos/seed/vlast/300/450",   badge:"Новинка",   trending:null, rating:9.3, desc:"Молодая девушка становится ассистентом могущественного CEO..." },
-  // Добавляй сюда остальные серии
 ];
 
 const GENRES = ["Все","Романтика","Фэнтези","Драма","Комедия","Триллер","Попаданчество"];
-
-const COINS_PACKAGES = [ /* твой оригинальный массив */ ];
-const VIP_PLANS = [ /* твой оригинальный массив */ ];
-const LANGUAGES = [ /* твой оригинальный массив */ ];
+const COINS_PACKAGES = [ /* вставь свой оригинальный массив */ ];
+const VIP_PLANS = [ /* вставь свой оригинальный массив */ ];
+const LANGUAGES = [ /* вставь свой оригинальный массив */ ];
 
 const VIDEO_MAP = { 13: { 1: "34a6f8cb-821b-43b5-940e-23c56cce2cef" } };
 const SUBTITLES_MAP = {
@@ -40,39 +37,29 @@ function getBunnyUrl(seriesId, episode) {
   const v = VIDEO_MAP[seriesId]?.[episode];
   return v ? `https://vz-433c2f1e-a5b.b-cdn.net/${v}/playlist.m3u8` : null;
 }
-
 function getSubtitleUrl(seriesId, episode, langCode) {
   return SUBTITLES_MAP[seriesId]?.[episode]?.[langCode] || null;
 }
 
 function useLS(key, def) {
-  const [v, setV] = useState(() => {
-    try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : def; } catch { return def; }
-  });
+  const [v, setV] = useState(() => { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : def; } catch { return def; } });
   const set = (x) => { setV(x); try { localStorage.setItem(key, JSON.stringify(x)); } catch {} };
   return [v, set];
 }
-
 function detectLanguage() {
-  try {
-    const s = localStorage.getItem("zd_lang");
-    if (s) return s;
-    const b = navigator.language?.split("-")[0] || "ru";
-    return LANGUAGES.find(l => l.code === b) ? b : "ru";
-  } catch { return "ru"; }
+  try { const s = localStorage.getItem("zd_lang"); if (s) return s; const b = navigator.language?.split("-")[0]||"ru"; return LANGUAGES.find(l=>l.code===b)?b:"ru"; } catch { return "ru"; }
 }
 
-const UI_TEXT = { /* твой оригинальный UI_TEXT полностью */ };
+const UI_TEXT = { /* вставь сюда весь свой оригинальный UI_TEXT */ };
 
-// ==================== ИКОНКИ (оставил как было) ====================
 const Ico = ({ d, size=22, color="currentColor", fill="none", sw=1.8 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>
 );
-// ... все Ico* компоненты, ZenLogo, CoinIco, Badge — оставь как в твоём оригинальном файле
+// ... все твои Ico*, ZenLogo, CoinIco, Badge — оставь как были
 
 const SeriesCard = memo(({ series, onClick, watchHistory }) => { /* твой оригинальный SeriesCard */ });
 
-// ==================== НОВЫЙ ПЛЕЕР ====================
+// ==================== ИСПРАВЛЕННЫЙ ПЛЕЕР ====================
 function Player({ series, episode, onClose, onNext, appLang, t }) {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
@@ -97,106 +84,89 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
   const nextHlsUrl = getBunnyUrl(series.id, episode + 1);
   const subUrl = showSubs ? getSubtitleUrl(series.id, episode, subLang) : null;
 
-  const fmt = (s) => !s || isNaN(s) ? '0:00' : `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+  const fmt = (s) => !s||isNaN(s) ? '0:00' : `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 
-  const showCtrl = useCallback(() => {
+  const showCtrl = () => {
     setShowControls(true);
     clearTimeout(controlTimer.current);
-    controlTimer.current = setTimeout(() => setShowControls(false), 2500);
-  }, []);
+    controlTimer.current = setTimeout(() => setShowControls(false), 3000);
+  };
 
-  // HLS + Максимальное качество
+  useEffect(() => { showCtrl(); return () => clearTimeout(controlTimer.current); }, []);
+
+  // HLS + максимальное качество сразу
   useEffect(() => {
     if (!hlsUrl || !videoRef.current) return;
     const video = videoRef.current;
 
-    const init = () => {
-      if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = hlsUrl;
-        video.load();
-      } else if (window.Hls) {
-        if (hlsRef.current) hlsRef.current.destroy();
-        const hls = new window.Hls({
-          enableWorker: true,
-          startLevel: -1,
-          abrEwmaDefaultEstimate: 8000000,
-        });
-        hls.loadSource(hlsUrl);
-        hls.attachMedia(video);
-        hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
-          if (hls.levels?.length) hls.currentLevel = hls.levels.length - 1;
-          video.play().catch(() => {});
-        });
-        hlsRef.current = hls;
-      }
-    };
-
-    init();
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = hlsUrl;
+      video.load();
+    } else if (window.Hls) {
+      if (hlsRef.current) hlsRef.current.destroy();
+      const hls = new window.Hls({ enableWorker: true, startLevel: -1, abrEwmaDefaultEstimate: 8000000 });
+      hls.loadSource(hlsUrl);
+      hls.attachMedia(video);
+      hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
+        if (hls.levels?.length) hls.currentLevel = hls.levels.length - 1;
+        video.play().catch(() => {});
+      });
+      hlsRef.current = hls;
+    }
 
     return () => { if (hlsRef.current) hlsRef.current.destroy(); };
   }, [hlsUrl]);
 
   // Субтитры
   useEffect(() => {
-    if (!subUrl) return setSrtData([]);
-    fetch(subUrl).then(r => r.text()).then(text => setSrtData(parseSRT(text))).catch(() => {});
+    if (!subUrl) { setSrtData([]); return; }
+    fetch(subUrl).then(r=>r.text()).then(text=>setSrtData(parseSRT(text))).catch(()=>{});
   }, [subUrl]);
 
-  // Время + автопереход
+  // Time + автопереход
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
     const onTime = () => {
       const ct = video.currentTime;
-      setProgress(ct / (video.duration || 1));
-      setCurrentTime(fmt(ct));
+      setProgress(ct/(video.duration||1));
+      setCurrentTime(fmt(ct)); 
       setDuration(fmt(video.duration));
-      const sub = srtData.find(s => ct >= s.start && ct <= s.end);
-      setCurrentSub(sub ? sub.text : '');
+      const sub = srtData.find(s=>ct>=s.start&&ct<=s.end);
+      setCurrentSub(sub?sub.text:'');
     };
-
     const onEnded = () => {
       if (nextHlsUrl) onNext();
       else onClose();
     };
-
     video.addEventListener('timeupdate', onTime);
     video.addEventListener('ended', onEnded);
     video.addEventListener('play', () => setIsPlaying(true));
     video.addEventListener('pause', () => setIsPlaying(false));
-
     return () => {
       video.removeEventListener('timeupdate', onTime);
       video.removeEventListener('ended', onEnded);
     };
   }, [srtData, nextHlsUrl, onNext, onClose]);
 
-  // ... (вставь сюда все свои контролы из старого плеера: top bar, center buttons, progress bar, quality/subtitle menu и т.д.)
+  // Вставь сюда весь свой оригинальный JSX контролов (top bar, center buttons, progress bar и т.д.)
+  // Он полностью совместим.
 
   return (
     <div onClick={showCtrl} style={{ position:'fixed', inset:0, background:'#000', zIndex:200, overflow:'hidden' }}>
-      <video
-        ref={videoRef}
-        style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'contain' }}
-        playsInline
-        preload="auto"
-      />
+      <video ref={videoRef} style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'contain' }} playsInline preload="auto" />
 
       {currentSub && showSubs && (
-        <div style={{ position:'absolute', bottom:'15%', left:'4%', right:'4%', textAlign:'center', zIndex:6, pointerEvents:'none' }}>
-          <span style={{ color:'#fff', fontSize:26, fontWeight:800, lineHeight:1.35, textShadow:'0 0 12px #000, 0 0 20px #000' }}>
-            {currentSub}
-          </span>
+        <div style={{ position:'absolute', bottom:'12%', left:'4%', right:'4%', textAlign:'center', zIndex:6, pointerEvents:'none' }}>
+          <span style={{ color:'#fff', fontSize:24, fontWeight:800, lineHeight:1.4, textShadow:'0 0 10px #000' }}>{currentSub}</span>
         </div>
       )}
 
-      {/* Вставь сюда весь блок контролов из твоего старого плеера */}
+      {/* Твои контролы сюда */}
     </div>
   );
 }
 
-// SeriesModal с правильным onNext
 function SeriesModal({ series, onClose, vip, coins, setCoins, watchHistory, setWatchHistory, appLang, t }) {
   const [tab, setTab] = useState("episodes");
   const [playerEp, setPlayerEp] = useState(null);
@@ -204,39 +174,37 @@ function SeriesModal({ series, onClose, vip, coins, setCoins, watchHistory, setW
 
   const unlockedEps = vip ? series.episodes : (watchHistory[series.id] || series.freeEpisodes);
 
-  const handleWatch = (ep) => {
-    setPlayerEp(ep);
-    if (ep > (watchHistory[series.id] || 0)) {
-      setWatchHistory(prev => ({ ...prev, [series.id]: ep }));
-    }
+  const handleUnlock = (ep) => {
+    if(coins<5){alert("Недостаточно монет!");return;}
+    setCoins(coins-5);
+    setWatchHistory({...watchHistory,[series.id]:Math.max(watchHistory[series.id]||0,ep)});
   };
 
-  if (playerEp) {
-    return (
-      <Player 
-        series={series} 
-        episode={playerEp} 
-        onClose={() => setPlayerEp(null)} 
-        onNext={() => {
-          const nextEp = playerEp + 1;
-          if (nextEp <= series.episodes) {
-            setPlayerEp(nextEp);
-          } else {
-            setPlayerEp(null);
-          }
-        }} 
-        appLang={appLang} 
-        t={t} 
-      />
-    );
-  }
+  const handleWatch = (ep) => {
+    setPlayerEp(ep);
+    if(ep > (watchHistory[series.id]||0)) setWatchHistory({...watchHistory,[series.id]:ep});
+  };
 
-  // ... остальной код SeriesModal как был у тебя
+  if (playerEp) return (
+    <Player 
+      series={series} 
+      episode={playerEp} 
+      onClose={()=>setPlayerEp(null)} 
+      onNext={() => {
+        const next = playerEp + 1;
+        if (next <= series.episodes) setPlayerEp(next);
+        else setPlayerEp(null);
+      }} 
+      appLang={appLang} 
+      t={t} 
+    />
+  );
+
+  // ... весь остальной код SeriesModal как у тебя был
 }
 
-// ShopModal, LangPicker — оставь как было
+// ShopModal, LangPicker, App — оставь как в оригинале
 
 export default function App() {
-  // ... весь твой основной код App (табы, фильтры, модалки и т.д.)
-  // ничего не менял, только используй новый Player и SeriesModal
+  // ... весь твой оригинальный код App
 }
