@@ -652,6 +652,19 @@ function SeriesModal({ series, onClose, vip, coins, setCoins, watchHistory, setW
 
   useEffect(() => { document.body.style.overflow="hidden"; return ()=>{ document.body.style.overflow=""; }; }, []);
 
+  // Preload первой серии сразу при открытии
+  useEffect(() => {
+    const firstEpUrl = getBunnyUrl(series.id, 1);
+    if (!firstEpUrl) return;
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'fetch';
+    link.href = firstEpUrl;
+    link.crossOrigin = 'anonymous';
+    document.head.appendChild(link);
+    return () => { try { document.head.removeChild(link); } catch {} };
+  }, [series.id]);
+
   function handleUnlock(ep) {
     if(coins<5){alert("Недостаточно монет!");return;}
     setCoins(coins-5);
