@@ -587,7 +587,7 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
           <div style={{ color:'rgba(255,255,255,0.6)', fontSize:14, letterSpacing:2, textTransform:'uppercase' }}>Следующая серия</div>
           <div style={{ color:'#fff', fontSize:72, fontWeight:900, lineHeight:1 }}>{nextCountdown}</div>
           <div style={{ color:C.accentLight, fontSize:16, fontWeight:600 }}>{series.title} — {t.episode} {episode+1}</div>
-          <button onClick={e=>{e.stopPropagation();setShowNextBanner(false);onNextRef.current();}} style={{ background:C.accent, color:'#fff', border:'none', borderRadius:14, padding:'16px 48px', fontSize:17, fontWeight:800, cursor:'pointer', marginTop:8 }}>
+          <button onClick={e=>{e.stopPropagation();setShowNextBanner(false);onNext();}} style={{ background:C.accent, color:'#fff', border:'none', borderRadius:14, padding:'16px 48px', fontSize:17, fontWeight:800, cursor:'pointer', marginTop:8 }}>
             ▶ Смотреть
           </button>
           <button onClick={e=>{e.stopPropagation();setShowNextBanner(false);onClose();}} style={{ background:'transparent', color:'rgba(255,255,255,0.4)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:10, padding:'10px 32px', fontSize:13, cursor:'pointer' }}>
