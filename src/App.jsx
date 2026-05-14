@@ -430,7 +430,20 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
   const [showSubMenu,  setShowSubMenu]   = useState(false);
 
   const hlsUrl = getBunnyUrl(series.id, episode);
+  const nextHlsUrl = getBunnyUrl(series.id, episode + 1);
   const subUrl = showSubs ? getSubtitleUrl(series.id, episode, subLang) : null;
+
+  // Preload следующей серии
+  useEffect(() => {
+    if (!nextHlsUrl) return;
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'fetch';
+    link.href = nextHlsUrl;
+    link.crossOrigin = 'anonymous';
+    document.head.appendChild(link);
+    return () => { try { document.head.removeChild(link); } catch {} };
+  }, [nextHlsUrl]);
 
   function fmt(s) { if(!s||isNaN(s)) return '0:00'; return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
 
