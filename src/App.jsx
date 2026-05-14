@@ -488,9 +488,18 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js';
       script.onload = () => {
         if (window.Hls?.isSupported()) {
-          const hls = new window.Hls({ enableWorker:false });
+          const hls = new window.Hls({
+            enableWorker: false,
+            startLevel: -1,
+            abrEwmaDefaultEstimate: 5000000,
+            abrBandWidthFactor: 0.95,
+            abrBandWidthUpFactor: 0.7,
+          });
           hls.loadSource(hlsUrl); hls.attachMedia(video);
-          hls.on(window.Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
+          hls.on(window.Hls.Events.MANIFEST_PARSED, (event, data) => {
+            hls.currentLevel = data.levels.length - 1;
+            video.play().catch(()=>{});
+          });
           hlsRef.current = hls;
         }
       };
