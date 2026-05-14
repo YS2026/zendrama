@@ -47,10 +47,12 @@ const LANGUAGES = [
 const BUNNY_LIBRARY_ID = "656045";
 const VIDEO_MAP = {
   14: { 1: "b880f416-f09b-4adc-bffe-5a8d895ce622" },
+  14: { 2: "1583497a-b656-41f5-8b3e-0ee0d9f9b40d" }
 };
 const SUBTITLES_MAP = {
-  14: { 1: {
-    ru: "https://zendrama-subs.b-cdn.net/okhota_za_sokrovishchami_ep001_ru.srt?v=2",
+  14: {
+    1: { ru: "https://zendrama-subs.b-cdn.net/okhota_za_sokrovishchami_ep001_ru.srt?v=2" },
+    2: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep002_ru.srt?v=2" }
   }},
 };
 
