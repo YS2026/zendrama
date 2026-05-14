@@ -20,10 +20,11 @@ const SERIES_DATA = [
   { id:10, title:"Королева читает мои мысли",           genre:"Фэнтези",       episodes:88, freeEpisodes:3, cover:"https://picsum.photos/seed/mindread/300/450",badge:"Эксклюзив", trending:null, rating:9.0, desc:"Необычный дар превращает жизнь в настоящее испытание..." },
   { id:11, title:"Яков и Алина: Пять лет тайной любви", genre:"Романтика",     episodes:70, freeEpisodes:3, cover:"https://picsum.photos/seed/yakov/300/450",   badge:"Хит",       trending:null, rating:9.4, desc:"Тайная любовь, скрытая от всего мира..." },
   { id:12, title:"Пленница",                            genre:"Триллер",       episodes:65, freeEpisodes:3, cover:"https://picsum.photos/seed/plen/300/450",    badge:"18+",       trending:null, rating:8.5, desc:"Побег из золотой клетки богатого особняка..." },
-  { id:13, title:"Власть и любовь",                     genre:"Романтика",     episodes:50, freeEpisodes:3, cover:"https://picsum.photos/seed/vlast/300/450",   badge:"Новинка",   trending:null, rating:9.3, desc:"Молодая девушка становится ассистентом могущественного CEO, скрывающего тайные чувства..." },
+  { id:13, title:"Власть и любовь",                     genre:"Романтика",     episodes:50,  freeEpisodes:3, cover:"https://picsum.photos/seed/vlast/300/450",   badge:"Новинка",   trending:null, rating:9.3, desc:"Молодая девушка становится ассистентом могущественного CEO, скрывающего тайные чувства..." },
+  { id:14, title:"Охота за сокровищами",                genre:"Приключения",   episodes:116, freeEpisodes:3, cover:"https://wangwangzyimg.com/upload/vod/20250904-1/777df16eea650fb94f7c44efbeee6bb7.jpg", badge:"Новинка", trending:null, rating:9.1, desc:"Водитель экскаватора случайно находит загадочный металлический шар и получает сверхъестественную способность видеть сквозь любые предметы. Так начинается его путь охотника за сокровищами..." },
 ];
 
-const GENRES = ["Все","Романтика","Фэнтези","Драма","Комедия","Триллер","Попаданчество"];
+const GENRES = ["Все","Романтика","Фэнтези","Драма","Комедия","Триллер","Попаданчество","Приключения"];
 const COINS_PACKAGES = [
   { id:1, coins:50,  price:"59 ₽",   bonus:"" },
   { id:2, coins:150, price:"149 ₽",  bonus:"+20 бонус" },
@@ -45,12 +46,18 @@ const LANGUAGES = [
 ];
 
 const BUNNY_LIBRARY_ID = "656045";
-const VIDEO_MAP = { 13: { 1: "34a6f8cb-821b-43b5-940e-23c56cce2cef" } };
+const VIDEO_MAP = {
+  13: { 1: "34a6f8cb-821b-43b5-940e-23c56cce2cef" },
+  14: { 1: "d8536151-5fc4-40aa-bdb0-f7502de5f49e" },
+};
 const SUBTITLES_MAP = {
   13: { 1: {
     ru: "https://zendrama-subs.b-cdn.net/seria_001_ru.srt",
     en: "https://zendrama-subs.b-cdn.net/seria_001_clean.srt",
-  }}
+  }},
+  14: { 1: {
+    ru: "https://zendrama-subs.b-cdn.net/okhota_za_sokrovishchami_ep001_ru.srt",
+  }},
 };
 
 function getBunnyUrl(seriesId, episode) {
