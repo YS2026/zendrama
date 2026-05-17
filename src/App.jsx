@@ -20,10 +20,10 @@ const SERIES_DATA = [
   { id:10, title:"Королева читает мои мысли",           genre:"Фэнтези",       episodes:88, freeEpisodes:3, cover:"https://picsum.photos/seed/mindread/300/450",badge:"Эксклюзив", trending:null, rating:9.0, desc:"Необычный дар превращает жизнь в настоящее испытание..." },
   { id:11, title:"Яков и Алина: Пять лет тайной любви", genre:"Романтика",     episodes:70, freeEpisodes:3, cover:"https://picsum.photos/seed/yakov/300/450",   badge:"Хит",       trending:null, rating:9.4, desc:"Тайная любовь, скрытая от всего мира..." },
   { id:12, title:"Пленница",                            genre:"Триллер",       episodes:65, freeEpisodes:3, cover:"https://picsum.photos/seed/plen/300/450",    badge:"18+",       trending:null, rating:8.5, desc:"Побег из золотой клетки богатого особняка..." },
-  { id:14, title:"Охота за сокровищами", genre:"Приключения", episodes:116, freeEpisodes:7, cover:"https://wangwangzyimg.com/upload/vod/20250904-1/777df16eea650fb94f7c44efbeee6bb7.jpg", badge:"Новинка", trending:null, rating:9.1, desc:"Водитель экскаватора случайно находит загадочный металлический шар и получает сверхъестественную способность видеть сквозь любые предметы." },
+  { id:13, title:"Власть и любовь",                     genre:"Романтика",     episodes:50, freeEpisodes:3, cover:"https://picsum.photos/seed/vlast/300/450",   badge:"Новинка",   trending:null, rating:9.3, desc:"Молодая девушка становится ассистентом могущественного CEO, скрывающего тайные чувства..." },
 ];
 
-const GENRES = ["Все","Романтика","Фэнтези","Драма","Комедия","Триллер","Попаданчество"];
+const GENRES = ["Все","Романтика","Фэнтези","Драма","Комедия","Триллер","Попаданчество","Приключения"];
 const COINS_PACKAGES = [
   { id:1, coins:50,  price:"59 ₽",   bonus:"" },
   { id:2, coins:150, price:"149 ₽",  bonus:"+20 бонус" },
@@ -45,245 +45,12 @@ const LANGUAGES = [
 ];
 
 const BUNNY_LIBRARY_ID = "656045";
-const VIDEO_MAP = {
-  14: {
-    1: "55fbff08-60a9-43a9-8b0c-d45d63d45fbd",
-    2: "39d36704-db3a-439c-bb50-bb8fdba1d923",
-    3: "976fcae1-feff-4c24-9c98-df364021f7a4",
-    4: "4c8c2298-5912-4fc0-b787-57f033d75b30",
-    5: "e2410fd8-193c-49a0-b745-1b45c5306505",
-    6: "d6c3da3e-adc4-424c-baf5-bf0e897d66c3",
-    7: "d5e8e631-4761-458a-ab9d-cda2ecf7bbe9",
-    8: "814e9df3-1ad4-4f24-bec3-5f3bd73361da",
-    9: "1e334e54-f698-4309-8df5-55431c97f1cd",
-    10: "04c7e6f2-ab18-4584-94b6-5b4a56747cbd",
-    11: "153222f6-0c5e-4e27-957a-9304a57686e6",
-    12: "6877ab87-0c37-455c-baaa-8963710b6c0c",
-    13: "85e6447e-e5ba-425b-9573-9d4b16a64978",
-    14: "b3a64def-f482-4ec6-8bfb-0fbeb614dec0",
-    15: "6f59eb73-d8c3-4334-94fd-09592bb96440",
-    16: "14882687-3aba-4caa-ba05-eb86e7926773",
-    17: "f64062f8-25fc-4e04-b93d-26073471af23",
-    18: "73c670f9-0f9e-44b2-8251-af2218c80a67",
-    19: "c2cd4d58-9512-4c5f-8f37-92c50eae95ab",
-    20: "68ff2e91-984a-4def-b26e-a324bfdebb0e",
-    21: "78aacad6-776d-44ac-a3eb-800cfd1df522",
-    22: "862e7a2a-c717-4dd0-950d-6038ffc595f6",
-    23: "05f3355f-4831-4f25-a0e2-afac92be2235",
-    24: "ab865f68-bbac-4422-9333-134ba16b015b",
-    25: "f3b4fa88-d1da-48ad-a9e5-1e666ce92d3b",
-    26: "11352ee4-370a-462e-938e-67c2790cbc52",
-    27: "3a0407fe-7744-4302-8e82-b10311aa25cd",
-    28: "cb9b31b3-7ee5-4467-a959-5587defbeb3c",
-    29: "fbe14628-d953-440c-8fde-be6775526b13",
-    30: "dd0361cc-672a-4055-b0a4-d7ca0dfde730",
-    31: "0b29dba0-4a61-4f6e-a67e-94b66b7d6571",
-    32: "e20dd3f1-9bf7-404f-af08-058475a78db4",
-    33: "d936d337-98ae-41eb-8e2c-0fb7ad084ae5",
-    34: "7b25720c-8287-421a-a146-a5edf0c5c15d",
-    35: "b1e63e15-4aa4-48f7-a0c0-e57d847dcd9c",
-    36: "b6629760-34cd-4ec7-bab4-1a1447b5249e",
-    37: "792b2a9d-90d6-4448-bb69-7af3afde6dbb",
-    38: "37375ba3-0601-455f-8213-d7c506ddac1e",
-    39: "0a190660-6fba-4589-9051-bae53e7d57ed",
-    40: "d47aa1c0-8d2d-4945-962f-99ac39a31db0",
-    41: "0a1deafa-e4e9-4208-8991-949ab52bf03b",
-    42: "e07d6d4c-6d6f-42e9-946e-66b0e9bd4e35",
-    43: "6c2303cd-03d1-4257-9e10-d9e8191dd1c8",
-    44: "808be851-64f3-4de0-830d-da1993c8ad4a",
-    45: "b086bdbb-5e86-4aaa-aed9-cc2152ea13e0",
-    46: "7a30649c-f557-4d42-8a38-1afb194fb903",
-    47: "fcbd21c7-b118-4796-8981-50aeede89e09",
-    48: "a437a09e-a028-43ae-850e-d3addafb99d6",
-    49: "2ec630a4-7d76-470e-a338-b01848d46e71",
-    50: "a3e1d4be-430c-45a7-95d3-d231e28d0833",
-    51: "928e74a3-2b87-48ef-896d-0b556578db59",
-    52: "2944f1ff-2f6b-459f-9fb0-e436aab2cd27",
-    53: "cfb458d3-be2a-4429-bf97-c124058dc103",
-    54: "2d79ba23-8dd4-43d5-a4a3-43b48e9a316c",
-    55: "388d2eef-2925-4413-a050-a25ac0da2475",
-    56: "a2d17f41-b3cd-4281-a52a-49830896a240",
-    57: "e73a56b4-b5a7-482c-9f16-ee00902ed362",
-    58: "c2cf55cb-3c93-472e-8bfb-2f15d89cc3f9",
-    59: "5f1dba20-902e-4f1d-b6f5-0655a13f5ec1",
-    60: "84a3604f-0594-4947-8a52-0069dfb45cc6",
-    61: "3c8b7fa9-69e9-4d35-8d4b-1972557a5dec",
-    62: "8102aba8-95e2-4641-8c9e-a7aa13378299",
-    63: "e841ee49-4726-4941-99cf-15a25b6be267",
-    64: "0cd19aaa-f1e6-4e62-b68b-749fb59addd8",
-    65: "48b04ed6-4ffd-43ae-aea4-30e931e066b0",
-    66: "194cc049-e6cd-423c-81e0-2ba6d59c8d30",
-    67: "e79f182c-6f36-4345-9ea6-85ecaa983004",
-    68: "9d5ff911-6c3c-48d6-a026-e688b030e394",
-    69: "abe4f94c-be2c-4db4-aa7e-2a2cae27503d",
-    70: "915d5cf7-40e1-49dd-b949-fa157a871985",
-    71: "bd40f2de-bb17-4a1b-b67c-ae9772d96525",
-    72: "758fc8da-a253-4b45-9e3e-448e49c6ee19",
-    73: "5ba09aaf-bccd-4f02-a066-77ff80c6ed5e",
-    74: "d3945a56-4187-4942-a557-bb560545246e",
-    75: "b3f27948-9bc0-4823-a404-a4740c8ca64f",
-    76: "91095e11-d82d-4965-8066-0ee486a9b672",
-    77: "90059efb-1e3d-4078-8e4b-13d784741e10",
-    78: "c641fd3d-f226-4ce5-b904-b46f9b550ae2",
-    79: "c92044ae-cf94-423d-84c9-f7d7edacc7b6",
-    80: "5f087da7-8bdd-4104-9144-13a8a8a2dc4d",
-    81: "1ec1b5cd-b672-4ea3-afe2-5b35744819de",
-    82: "2ba34146-a990-43a7-8a9a-c2536ae4bd00",
-    83: "07e1596f-e07f-4db4-ae4c-c1cf33b2f96c",
-    84: "48381274-cddd-459b-b501-43cf1fa332e1",
-    85: "a32035c6-cdd9-4103-9303-9c72992068c4",
-    86: "324e75c0-3c85-460a-9172-d24efd1f329b",
-    87: "6de10d3a-c388-47f0-9f69-31c112b85b09",
-    88: "3b96b2e9-da51-4708-a332-0f586df32c0c",
-    89: "5e6ffea8-8251-4440-9b76-40263a99f3d0",
-    90: "7a6e9076-052a-4d41-8a1f-b4c41f540a7c",
-    91: "104de060-bdb2-444f-a2bb-e550f59f9dc2",
-    92: "111a61b6-e878-437b-a93d-7f44cfe26466",
-    93: "23a32e13-41ee-45f2-83ab-aed996495e68",
-    94: "7cf79dcb-b61a-4110-8acc-a0fd3f5cf355",
-    95: "97ca7998-f2ee-439b-8d3b-e3ee09e10a1b",
-    96: "6068a6a8-8647-488d-89d9-40d3a7eb761e",
-    97: "9205e76d-cca7-435f-8fe5-d825d2fc6735",
-    98: "647d5d38-2738-4744-87d6-9b2c87325b56",
-    99: "0fdc39c6-4293-448c-80f7-43171b3c3b92",
-    100: "92878904-50c3-44ac-b500-1cce30406014",
-    101: "7c2b40aa-d2c8-4b64-bb78-d226a76ce8f5",
-    102: "80be91ec-e618-4fac-8645-ecbf32889565",
-    103: "b61aed00-275b-4208-8b42-7577dc790c26",
-    104: "08027610-f889-44c5-b5d3-d075008ad6b3",
-    105: "2261ccf9-0183-40d2-b4dc-8060a866862d",
-    106: "6eb9f5bc-9dc1-4cf5-a200-feba94cf4148",
-    107: "f15ee79f-b889-4281-a338-c4cf69b80ad8",
-    108: "5f5d6f15-8d82-40cb-be8f-971268f9ef5f",
-    109: "98572c10-b5b8-471d-970f-0f07f49ba9e7",
-    110: "315436d9-7985-42c5-9331-14706f60d531",
-    111: "4ec25e34-6690-4159-b4a9-66b71762cfd5",
-    112: "c3d699aa-f693-4450-ba9b-564e756a3fdb",
-    113: "74f198cd-5b2a-4a13-9a15-d607a4b9c100",
-    114: "942aa36c-fd6d-4bca-91dc-69d9cd9656ff",
-    115: "fd289203-4d75-4da1-9695-77fb2972e823",
-    116: "8a7c5de3-bdcc-4da5-8268-6ece4affc002"
-  }
-};
+const VIDEO_MAP = { 13: { 1: "34a6f8cb-821b-43b5-940e-23c56cce2cef" } };
 const SUBTITLES_MAP = {
-  14: {
-    1: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep001_ru.srt?v=3" },
-    2: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep002_ru.srt?v=3" },
-    3: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep003_ru.srt?v=3" },
-    4: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep004_ru.srt?v=3" },
-    5: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep005_ru.srt?v=3" },
-    6: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep006_ru.srt?v=3" },
-    7: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep007_ru.srt?v=3" },
-    8: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep008_ru.srt?v=3" },
-    9: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep009_ru.srt?v=3" },
-    10: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep010_ru.srt?v=3" },
-    11: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep011_ru.srt?v=3" },
-    12: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep012_ru.srt?v=3" },
-    13: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep013_ru.srt?v=3" },
-    14: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep014_ru.srt?v=3" },
-    15: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep015_ru.srt?v=3" },
-    16: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep016_ru.srt?v=3" },
-    17: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep017_ru.srt?v=3" },
-    18: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep018_ru.srt?v=3" },
-    19: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep019_ru.srt?v=3" },
-    20: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep020_ru.srt?v=3" },
-    21: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep021_ru.srt?v=3" },
-    22: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep022_ru.srt?v=3" },
-    23: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep023_ru.srt?v=3" },
-    24: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep024_ru.srt?v=3" },
-    25: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep025_ru.srt?v=3" },
-    26: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep026_ru.srt?v=3" },
-    27: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep027_ru.srt?v=3" },
-    28: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep028_ru.srt?v=3" },
-    29: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep029_ru.srt?v=3" },
-    30: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep030_ru.srt?v=3" },
-    31: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep031_ru.srt?v=3" },
-    32: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep032_ru.srt?v=3" },
-    33: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep033_ru.srt?v=3" },
-    34: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep034_ru.srt?v=3" },
-    35: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep035_ru.srt?v=3" },
-    36: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep036_ru.srt?v=3" },
-    37: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep037_ru.srt?v=3" },
-    38: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep038_ru.srt?v=3" },
-    39: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep039_ru.srt?v=3" },
-    40: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep040_ru.srt?v=3" },
-    41: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep041_ru.srt?v=3" },
-    42: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep042_ru.srt?v=3" },
-    43: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep043_ru.srt?v=3" },
-    44: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep044_ru.srt?v=3" },
-    45: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep045_ru.srt?v=3" },
-    46: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep046_ru.srt?v=3" },
-    47: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep047_ru.srt?v=3" },
-    48: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep048_ru.srt?v=3" },
-    49: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep049_ru.srt?v=3" },
-    50: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep050_ru.srt?v=3" },
-    51: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep051_ru.srt?v=3" },
-    52: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep052_ru.srt?v=3" },
-    53: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep053_ru.srt?v=3" },
-    54: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep054_ru.srt?v=3" },
-    55: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep055_ru.srt?v=3" },
-    56: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep056_ru.srt?v=3" },
-    57: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep057_ru.srt?v=3" },
-    58: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep058_ru.srt?v=3" },
-    59: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep059_ru.srt?v=3" },
-    60: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep060_ru.srt?v=3" },
-    61: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep061_ru.srt?v=3" },
-    62: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep062_ru.srt?v=3" },
-    63: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep063_ru.srt?v=3" },
-    64: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep064_ru.srt?v=3" },
-    65: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep065_ru.srt?v=3" },
-    66: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep066_ru.srt?v=3" },
-    67: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep067_ru.srt?v=3" },
-    68: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep068_ru.srt?v=3" },
-    69: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep069_ru.srt?v=3" },
-    70: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep070_ru.srt?v=3" },
-    71: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep071_ru.srt?v=3" },
-    72: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep072_ru.srt?v=3" },
-    73: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep073_ru.srt?v=3" },
-    74: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep074_ru.srt?v=3" },
-    75: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep075_ru.srt?v=3" },
-    76: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep076_ru.srt?v=3" },
-    77: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep077_ru.srt?v=3" },
-    78: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep078_ru.srt?v=3" },
-    79: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep079_ru.srt?v=3" },
-    80: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep080_ru.srt?v=3" },
-    81: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep081_ru.srt?v=3" },
-    82: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep082_ru.srt?v=3" },
-    83: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep083_ru.srt?v=3" },
-    84: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep084_ru.srt?v=3" },
-    85: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep085_ru.srt?v=3" },
-    86: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep086_ru.srt?v=3" },
-    87: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep087_ru.srt?v=3" },
-    88: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep088_ru.srt?v=3" },
-    89: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep089_ru.srt?v=3" },
-    90: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep090_ru.srt?v=3" },
-    91: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep091_ru.srt?v=3" },
-    92: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep092_ru.srt?v=3" },
-    93: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep093_ru.srt?v=3" },
-    94: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep094_ru.srt?v=3" },
-    95: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep095_ru.srt?v=3" },
-    96: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep096_ru.srt?v=3" },
-    97: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep097_ru.srt?v=3" },
-    98: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep098_ru.srt?v=3" },
-    99: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep099_ru.srt?v=3" },
-    100: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep100_ru.srt?v=3" },
-    101: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep101_ru.srt?v=3" },
-    102: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep102_ru.srt?v=3" },
-    103: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep103_ru.srt?v=3" },
-    104: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep104_ru.srt?v=3" },
-    105: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep105_ru.srt?v=3" },
-    106: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep106_ru.srt?v=3" },
-    107: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep107_ru.srt?v=3" },
-    108: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep108_ru.srt?v=3" },
-    109: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep109_ru.srt?v=3" },
-    110: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep110_ru.srt?v=3" },
-    111: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep111_ru.srt?v=3" },
-    112: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep112_ru.srt?v=3" },
-    113: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep113_ru.srt?v=3" },
-    114: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep114_ru.srt?v=3" },
-    115: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep115_ru.srt?v=3" },
-    116: { ru: "https://zendrama-subs.b-cdn.net/okhota_ep116_ru.srt?v=3" }
-  }
+  13: { 1: {
+    ru: "https://zendrama-subs.b-cdn.net/seria_001_ru.srt",
+    en: "https://zendrama-subs.b-cdn.net/seria_001_clean.srt",
+  }}
 };
 
 function getBunnyUrl(seriesId, episode) {
@@ -416,26 +183,26 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
   const onNextRef    = useRef(onNext);
   useEffect(() => { onNextRef.current = onNext; }, [onNext]);
 
-  const [showControls, setShowControls] = useState(true);
-  const [currentSub,   setCurrentSub]   = useState('');
-  const [srtData,      setSrtData]       = useState([]);
-  const [isPlaying,    setIsPlaying]     = useState(false);
-  const [progress,     setProgress]      = useState(0);
-  const [currentTime,  setCurrentTime]   = useState('0:00');
-  const [duration,     setDuration]      = useState('0:00');
-  const [muted,        setMuted]         = useState(false);
-  const [quality,      setQuality]       = useState('Auto');
-  const [showQuality,  setShowQuality]   = useState(false);
-  const [isFullscreen, setIsFullscreen]  = useState(false);
-  const [showSubs,     setShowSubs]      = useState(true);
-  const [subLang,      setSubLang]       = useLS('zd_sublang', appLang);
-  const [showSubMenu,  setShowSubMenu]   = useState(false);
+  const [showControls,   setShowControls]   = useState(true);
+  const [currentSub,     setCurrentSub]     = useState('');
+  const [srtData,        setSrtData]        = useState([]);
+  const [isPlaying,      setIsPlaying]      = useState(false);
+  const [progress,       setProgress]       = useState(0);
+  const [currentTime,    setCurrentTime]    = useState('0:00');
+  const [duration,       setDuration]       = useState('0:00');
+  const [muted,          setMuted]          = useState(false);
+  const [quality,        setQuality]        = useState('Auto');
+  const [showQuality,    setShowQuality]    = useState(false);
+  const [isFullscreen,   setIsFullscreen]   = useState(false);
+  const [showSubs,       setShowSubs]       = useState(true);
+  const [subLang,        setSubLang]        = useLS('zd_sublang', appLang);
+  const [showSubMenu,    setShowSubMenu]    = useState(false);
   const [showNextBanner, setShowNextBanner] = useState(false);
   const [nextCountdown,  setNextCountdown]  = useState(5);
 
-  const hlsUrl    = getBunnyUrl(series.id, episode);
+  const hlsUrl     = getBunnyUrl(series.id, episode);
   const nextHlsUrl = getBunnyUrl(series.id, episode + 1);
-  const subUrl    = showSubs ? getSubtitleUrl(series.id, episode, subLang) : null;
+  const subUrl     = showSubs ? getSubtitleUrl(series.id, episode, subLang) : null;
 
   function fmt(s) { if(!s||isNaN(s)) return '0:00'; return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
 
@@ -450,31 +217,19 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
     return () => { document.body.style.overflow=''; document.body.style.position=''; document.body.style.width=''; };
   }, []);
 
-  // Загрузка видео
   useEffect(() => {
     if (!hlsUrl||!videoRef.current) return;
     const video = videoRef.current;
-    setShowNextBanner(false);
-    setNextCountdown(5);
-    setProgress(0);
-    setCurrentTime('0:00');
-
+    setShowNextBanner(false); setNextCountdown(5); setProgress(0); setCurrentTime('0:00');
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = hlsUrl;
-      video.load();
-      video.play().catch(()=>{});
+      video.src = hlsUrl; video.load(); video.play().catch(()=>{});
     } else {
       if (hlsRef.current) { hlsRef.current.destroy(); hlsRef.current = null; }
       const initHls = () => {
         if (window.Hls?.isSupported()) {
-          const hls = new window.Hls({
-            enableWorker: false,
-            startLevel: -1,
-            abrEwmaDefaultEstimate: 5000000,
-          });
-          hls.loadSource(hlsUrl);
-          hls.attachMedia(video);
-          hls.on(window.Hls.Events.MANIFEST_PARSED, (e, d) => {
+          const hls = new window.Hls({ enableWorker:false, startLevel:-1, abrEwmaDefaultEstimate:5000000 });
+          hls.loadSource(hlsUrl); hls.attachMedia(video);
+          hls.on(window.Hls.Events.MANIFEST_PARSED, (e,d) => {
             hls.currentLevel = d.levels.length - 1;
             video.play().catch(()=>{});
           });
@@ -492,23 +247,19 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
     return () => { if(hlsRef.current){hlsRef.current.destroy();hlsRef.current=null;} };
   }, [hlsUrl]);
 
-  // Preload следующей серии
   useEffect(() => {
     if (!nextHlsUrl) return;
     const link = document.createElement('link');
-    link.rel = 'preload'; link.as = 'fetch';
-    link.href = nextHlsUrl; link.crossOrigin = 'anonymous';
+    link.rel='preload'; link.as='fetch'; link.href=nextHlsUrl; link.crossOrigin='anonymous';
     document.head.appendChild(link);
     return () => { try { document.head.removeChild(link); } catch {} };
   }, [nextHlsUrl]);
 
-  // Субтитры
   useEffect(() => {
     if (!subUrl) { setSrtData([]); setCurrentSub(''); return; }
     fetch(subUrl).then(r=>r.text()).then(text=>setSrtData(parseSRT(text))).catch(()=>{});
   }, [subUrl]);
 
-  // Timeupdate + ended
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -519,14 +270,7 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
       const sub = srtData.find(s=>ct>=s.start&&ct<=s.end);
       setCurrentSub(sub?sub.text:'');
     };
-    const onEnded = () => {
-      if (nextHlsUrl) {
-        setShowNextBanner(true);
-        setNextCountdown(5);
-      } else {
-        onNextRef.current();
-      }
-    };
+    const onEnded = () => { setShowNextBanner(true); setNextCountdown(5); };
     video.addEventListener('timeupdate', onTime);
     video.addEventListener('play', ()=>setIsPlaying(true));
     video.addEventListener('pause', ()=>setIsPlaying(false));
@@ -535,14 +279,13 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
       video.removeEventListener('timeupdate', onTime);
       video.removeEventListener('ended', onEnded);
     };
-  }, [srtData, nextHlsUrl]);
+  }, [srtData]);
 
-  // Countdown для баннера следующей серии
   useEffect(() => {
     if (!showNextBanner) return;
     if (nextCountdown <= 0) { onNextRef.current(); return; }
-    const t = setTimeout(() => setNextCountdown(c => c-1), 1000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setNextCountdown(c=>c-1), 1000);
+    return () => clearTimeout(timer);
   }, [showNextBanner, nextCountdown]);
 
   function showCtrl() {
@@ -581,16 +324,19 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
         </div>
       )}
 
-      {/* Баннер следующей серии */}
       {showNextBanner && (
         <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.88)', zIndex:50, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:24 }}>
-          <div style={{ color:'rgba(255,255,255,0.6)', fontSize:14, letterSpacing:2, textTransform:'uppercase' }}>Следующая серия</div>
+          <div style={{ color:'rgba(255,255,255,0.6)', fontSize:13, letterSpacing:2, textTransform:'uppercase' }}>Следующая серия</div>
           <div style={{ color:'#fff', fontSize:72, fontWeight:900, lineHeight:1 }}>{nextCountdown}</div>
-          <div style={{ color:C.accentLight, fontSize:16, fontWeight:600 }}>{series.title} — {t.episode} {episode+1}</div>
-          <button onClick={e=>{e.stopPropagation();setShowNextBanner(false);onNextRef.current();}} style={{ background:C.accent, color:'#fff', border:'none', borderRadius:14, padding:'16px 48px', fontSize:17, fontWeight:800, cursor:'pointer', marginTop:8 }}>
+          <div style={{ color:C.accentLight, fontSize:16, fontWeight:600 }}>{series.title} — Серия {episode+1}</div>
+          <button
+            onClick={e=>{e.stopPropagation();setShowNextBanner(false);onNextRef.current();}}
+            style={{ background:C.accent, color:'#fff', border:'none', borderRadius:14, padding:'16px 48px', fontSize:17, fontWeight:800, cursor:'pointer', marginTop:8 }}>
             ▶ Смотреть
           </button>
-          <button onClick={e=>{e.stopPropagation();setShowNextBanner(false);onClose();}} style={{ background:'transparent', color:'rgba(255,255,255,0.4)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:10, padding:'10px 32px', fontSize:13, cursor:'pointer' }}>
+          <button
+            onClick={e=>{e.stopPropagation();setShowNextBanner(false);onClose();}}
+            style={{ background:'transparent', color:'rgba(255,255,255,0.4)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:10, padding:'10px 32px', fontSize:13, cursor:'pointer' }}>
             Выйти
           </button>
         </div>
@@ -633,7 +379,6 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
               </div>
             )}
           </div>
-
           <div style={{ position:'relative' }}>
             <button onClick={e=>{e.stopPropagation();setShowSubMenu(v=>!v);setShowQuality(false);showCtrl();}} style={{ ...glassPill, background:showSubs?'radial-gradient(circle at 35% 35%, rgba(124,106,247,0.6), rgba(124,106,247,0.3))':'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.3), rgba(0,0,0,0.4))' }}>
               CC {showSubs ? LANGUAGES.find(l=>l.code===subLang)?.flag : ''}
@@ -654,7 +399,6 @@ function Player({ series, episode, onClose, onNext, appLang, t }) {
               </div>
             )}
           </div>
-
           <button onClick={e=>{e.stopPropagation();setMuted(v=>{const nm=!v;if(videoRef.current)videoRef.current.muted=nm;return nm;});showCtrl();}} style={{...glassBtn(44),fontSize:18}}>{muted?'🔇':'🔊'}</button>
           <button onClick={e=>{e.stopPropagation();toggleFullscreen();showCtrl();}} style={{...glassBtn(44),fontSize:18}}>{isFullscreen?'⤡':'⤢'}</button>
         </div>
@@ -723,7 +467,10 @@ function SeriesModal({ series, onClose, vip, coins, setCoins, watchHistory, setW
         const next=playerEp+1;
         if(next>series.episodes)return;
         const unl=vip?series.episodes:Math.max(watchHistory[series.id]||0, getDripEpisodes(series.id, series.freeEpisodes));
-        if(next<=unl){ handleWatch(next); }
+        if(next<=unl){
+          setWatchHistory({...watchHistory,[series.id]:next});
+          setPlayerEp(next);
+        }
       }}/>
   );
 
@@ -860,7 +607,7 @@ export default function App() {
   const t = UI_TEXT[appLang]||UI_TEXT.ru;
   useEffect(()=>{ setGenre("Все"); }, [appLang]);
 
-  const filtered = SERIES_DATA.filter(s=>s.title.toLowerCase().includes(searchQ.toLowerCase()));
+  const filtered = SERIES_DATA.filter(s=>s.title.toLowerCase().includes(searchQ.toLowerCase())&&(genre==="Все"||s.genre===genre));
   const trending = [...SERIES_DATA].filter(s=>s.trending).sort((a,b)=>a.trending-b.trending);
   const continueList = SERIES_DATA.filter(s=>Object.keys(history).map(Number).includes(s.id));
 
@@ -1036,3 +783,56 @@ export default function App() {
     </div>
   );
 }
+
+
+/*
+═══════════════════════════════════════════════════════
+  ИТОГОВЫЙ ОТЧЁТ — ZenDrama, 14 мая 2025
+═══════════════════════════════════════════════════════
+
+✅ РАБОТАЕТ:
+  - 116 серий "Охота за сокровищами" загружены на Bunny Stream
+  - 116 русских субтитров загружены на Bunny CDN
+  - VIDEO_MAP и SUBTITLES_MAP прописаны в App.jsx
+  - 7 бесплатных серий + drip +3 серии каждые 24 часа
+  - Фильтр по жанрам (включая "Приключения")
+  - Субтитры RU отображаются в плеере
+  - Баннер "Следующая серия" с обратным отсчётом 5 сек
+  - Preload следующей серии в фоне
+  - Poster (превью) при загрузке видео
+  - HLS стартует с максимального качества
+  - Монеты и Premium (UI без реальной оплаты)
+
+⚠️ ТРЕБУЕТ ВНИМАНИЯ:
+  1. КНОПКА "Смотреть" в баннере следующей серии
+     Проблема: на мобильном iOS кнопка не запускает видео
+     Причина: iOS Safari блокирует автозапуск — даже
+               после тапа, если React пересоздаёт Player
+     Решение: в SeriesModal setPlayerEp(next) теперь
+               вызывается через setWatchHistory — это
+               триггерит ре-рендер и Player пересоздаётся
+               с новым episode. iOS должен принять тап
+               как пользовательское действие и разрешить play.
+               Проверь после деплоя этого файла.
+
+  2. РАЗМЫТОСТЬ В НАЧАЛЕ СЕРИЙ
+     Причина: Bunny HLS адаптивный стриминг начинает
+               с низкого качества
+     Что сделано: startLevel=-1, abrEwmaDefaultEstimate=5M,
+               currentLevel = максимальный, poster thumbnail
+     Что ещё можно: в Bunny Dashboard → Stream Library →
+               Optimization → увеличить "Initial Bitrate"
+
+  3. РЕАЛЬНАЯ ОПЛАТА не подключена
+     Нужно: Stripe или ЮКасса
+     Сейчас: UI есть, оплата симулируется через alert()
+
+  4. ОБЛОЖКИ СЕРИАЛОВ id:1-12 — заглушки picsum.photos
+     Нужно: реальные постеры для каждого сериала
+
+  5. ПРАВИЛО — НИКОГДА не загружать App.jsx вручную!
+     Только через: python3 ~/Desktop/zendrama_full.py --step 4
+     Иначе VIDEO_MAP сбрасывается на старую версию.
+
+═══════════════════════════════════════════════════════
+*/
