@@ -1,805 +1,727 @@
-import { useState, useEffect, useRef } from "react";
+// ZenDrama - Main App Component
+// This file can be used for React/Vite projects uploaded via GitHub
+// For Next.js deployment on Vercel, use the app/ directory structure
 
-const C = {
-  bg: "#08090d", card: "#111318", card2: "#1a1c24",
-  accent: "#7c6af7", accentLight: "#a89cf8", accentGlow: "#7c6af720",
-  red: "#e05b7f", text: "#f0eeff", textMuted: "#7a7a9a", textDim: "#3a3a5a",
-  jade: "#3ecf8e",
+import React, { useState, useRef } from 'react';
+
+// Drama Data
+const trendingDramas = [
+  { id: "1", title: "Eternal Love", poster: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=450&fit=crop", genre: "Romance", year: 2024, episodes: 50, rating: 9.2 },
+  { id: "2", title: "Hidden Secrets", poster: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=300&h=450&fit=crop", genre: "Mystery", year: 2024, episodes: 24, rating: 8.8 },
+  { id: "3", title: "CEO's Contract", poster: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=450&fit=crop", genre: "Romance", year: 2024, episodes: 36, rating: 8.5 },
+  { id: "4", title: "Time Traveler", poster: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300&h=450&fit=crop", genre: "Fantasy", year: 2024, episodes: 40, rating: 9.0 },
+  { id: "5", title: "Royal Dynasty", poster: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300&h=450&fit=crop", genre: "Historical", year: 2024, episodes: 60, rating: 9.1 },
+  { id: "6", title: "Urban Dreams", poster: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=450&fit=crop", genre: "Urban", year: 2024, episodes: 30, rating: 8.7 },
+];
+
+const newReleases = [
+  { id: "7", title: "Moonlight Sonata", poster: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=450&fit=crop", genre: "Romance", year: 2024, episodes: 24 },
+  { id: "8", title: "Corporate Wars", poster: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=450&fit=crop", genre: "Urban", year: 2024, episodes: 40 },
+  { id: "9", title: "Supernatural Academy", poster: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&h=450&fit=crop", genre: "Fantasy", year: 2024, episodes: 36 },
+  { id: "10", title: "Revenge Protocol", poster: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=450&fit=crop", genre: "Thriller", year: 2024, episodes: 28 },
+  { id: "11", title: "Second Chance", poster: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=450&fit=crop", genre: "Romance", year: 2024, episodes: 32 },
+  { id: "12", title: "Dynasty Rising", poster: "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=300&h=450&fit=crop", genre: "Historical", year: 2024, episodes: 45 },
+];
+
+const exclusiveOriginals = [
+  { id: "13", title: "The Phoenix", poster: "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=300&h=450&fit=crop", genre: "Action", year: 2024, episodes: 20 },
+  { id: "14", title: "Silent Whispers", poster: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&h=450&fit=crop", genre: "Mystery", year: 2024, episodes: 16 },
+  { id: "15", title: "Parallel Hearts", poster: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&h=450&fit=crop", genre: "Sci-Fi", year: 2024, episodes: 24 },
+  { id: "16", title: "Jade Empire", poster: "https://images.unsplash.com/photo-1496440737103-cd596325d314?w=300&h=450&fit=crop", genre: "Historical", year: 2024, episodes: 50 },
+  { id: "17", title: "Neon Nights", poster: "https://images.unsplash.com/photo-1514315384763-ba401779410f?w=300&h=450&fit=crop", genre: "Urban", year: 2024, episodes: 30 },
+  { id: "18", title: "Dragon's Legacy", poster: "https://images.unsplash.com/photo-1464863979621-258859e62245?w=300&h=450&fit=crop", genre: "Fantasy", year: 2024, episodes: 40 },
+];
+
+const featuredDrama = {
+  id: "featured",
+  title: "Reborn in Another World",
+  poster: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=800&fit=crop",
+  genre: "Fantasy",
+  year: 2024,
+  episodes: 40,
+  rating: 9.5,
+  description: "After an unexpected accident, a modern woman wakes up in an ancient kingdom with no memory of her past. Now she must navigate palace intrigue, forbidden love, and discover the truth about her mysterious reincarnation."
 };
 
-const SERIES_DATA = [
-  { id:1,  title:"Тайный миллионер",                   genre:"Романтика",     episodes:80, freeEpisodes:3, cover:"https://picsum.photos/seed/mill/300/450",    badge:"Эксклюзив", trending:1, rating:9.2, desc:"Девушка из бедной семьи случайно встречает скрытного миллиардера..." },
-  { id:2,  title:"Рождённый повелителем",               genre:"Фэнтези",       episodes:96, freeEpisodes:3, cover:"https://picsum.photos/seed/lord/300/450",    badge:"Эксклюзив", trending:4, rating:8.9, desc:"Древний правитель возрождается в современном мире с магическими силами..." },
-  { id:3,  title:"Муж-гендиректор меня баловал",        genre:"Романтика",     episodes:68, freeEpisodes:3, cover:"https://picsum.photos/seed/ceo/300/450",     badge:"Эксклюзив", trending:2, rating:9.5, desc:"Брак по договору превращается в настоящую любовь..." },
-  { id:4,  title:"Тот самый мальчик",                   genre:"Романтика",     episodes:72, freeEpisodes:3, cover:"https://picsum.photos/seed/boy/300/450",     badge:"Эксклюзив", trending:5, rating:8.7, desc:"Первая любовь снова появляется спустя 10 лет..." },
-  { id:5,  title:"Телефон для невесты",                 genre:"Комедия",       episodes:58, freeEpisodes:3, cover:"https://picsum.photos/seed/phone/300/450",   badge:"Эксклюзив", trending:6, rating:8.4, desc:"Случайный обмен телефонами меняет судьбы двух незнакомцев..." },
-  { id:6,  title:"Замуж за врага",                      genre:"Драма",         episodes:84, freeEpisodes:3, cover:"https://picsum.photos/seed/enemy/300/450",   badge:"Эксклюзив", trending:3, rating:9.1, desc:"Вынужденный союз с главным соперником семьи..." },
-  { id:7,  title:"Эвелин и Гари: Новая жизнь",          genre:"Попаданчество", episodes:93, freeEpisodes:3, cover:"https://picsum.photos/seed/evelin/300/450",  badge:"Хит",       trending:null, rating:9.3, desc:"Современная женщина попадает в древний Китай..." },
-  { id:8,  title:"Двойная жизнь королевы бизнеса",      genre:"Драма",         episodes:76, freeEpisodes:3, cover:"https://picsum.photos/seed/queen2/300/450",  badge:"Новинка",   trending:null, rating:8.6, desc:"Успешная бизнес-леди скрывает тёмное прошлое..." },
-  { id:9,  title:"Твоё солнце",                         genre:"Романтика",     episodes:62, freeEpisodes:3, cover:"https://picsum.photos/seed/sun/300/450",     badge:"Эксклюзив", trending:null, rating:8.8, desc:"Слепая девушка и её тайный покровитель..." },
-  { id:10, title:"Королева читает мои мысли",           genre:"Фэнтези",       episodes:88, freeEpisodes:3, cover:"https://picsum.photos/seed/mindread/300/450",badge:"Эксклюзив", trending:null, rating:9.0, desc:"Необычный дар превращает жизнь в настоящее испытание..." },
-  { id:11, title:"Яков и Алина: Пять лет тайной любви", genre:"Романтика",     episodes:70, freeEpisodes:3, cover:"https://picsum.photos/seed/yakov/300/450",   badge:"Хит",       trending:null, rating:9.4, desc:"Тайная любовь, скрытая от всего мира..." },
-  { id:12, title:"Пленница",                            genre:"Триллер",       episodes:65, freeEpisodes:3, cover:"https://picsum.photos/seed/plen/300/450",    badge:"18+",       trending:null, rating:8.5, desc:"Побег из золотой клетки богатого особняка..." },
-  { id:13, title:"Власть и любовь",                     genre:"Романтика",     episodes:50, freeEpisodes:3, cover:"https://picsum.photos/seed/vlast/300/450",   badge:"Новинка",   trending:null, rating:9.3, desc:"Молодая девушка становится ассистентом могущественного CEO, скрывающего тайные чувства..." },
-];
-
-const GENRES = ["Все","Романтика","Фэнтези","Драма","Комедия","Триллер","Попаданчество"];
-const COINS_PACKAGES = [
-  { id:1, coins:50,  price:"59 ₽",   bonus:"" },
-  { id:2, coins:150, price:"149 ₽",  bonus:"+20 бонус" },
-  { id:3, coins:350, price:"299 ₽",  bonus:"+50 бонус", popular:true },
-  { id:4, coins:800, price:"599 ₽",  bonus:"+150 бонус" },
-];
-const VIP_PLANS = [
-  { id:1, name:"Неделя", price:"99 ₽",   period:"7 дней",   save:"" },
-  { id:2, name:"Месяц",  price:"299 ₽",  period:"30 дней",  save:"Экономия 25%", popular:true },
-  { id:3, name:"Год",    price:"1990 ₽", period:"365 дней", save:"Экономия 45%" },
-];
-const LANGUAGES = [
-  { code:"ru", flag:"🇷🇺", name:"Русский" },
-  { code:"en", flag:"🇬🇧", name:"English" },
-  { code:"th", flag:"🇹🇭", name:"ภาษาไทย" },
-  { code:"zh", flag:"🇨🇳", name:"中文" },
-  { code:"de", flag:"🇩🇪", name:"Deutsch" },
-  { code:"fr", flag:"🇫🇷", name:"Français" },
-];
-
-const BUNNY_LIBRARY_ID = "656045";
-const VIDEO_MAP = { 13: { 1: "34a6f8cb-821b-43b5-940e-23c56cce2cef" } };
-const SUBTITLES_MAP = {
-  13: { 1: {
-    ru: "https://zendrama-subs.b-cdn.net/seria_001_ru.srt",
-    en: "https://zendrama-subs.b-cdn.net/seria_001_clean.srt",
-  }}
-};
-
-function getBunnyUrl(seriesId, episode) {
-  const v = VIDEO_MAP[seriesId]?.[episode];
-  return v ? `https://vz-433c2f1e-a5b.b-cdn.net/${v}/playlist.m3u8` : null;
-}
-function getSubtitleUrl(seriesId, episode, langCode) {
-  return SUBTITLES_MAP[seriesId]?.[episode]?.[langCode] || null;
-}
-function useLS(key, def) {
-  const [v, setV] = useState(() => { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : def; } catch { return def; } });
-  const set = (x) => { setV(x); try { localStorage.setItem(key, JSON.stringify(x)); } catch {} };
-  return [v, set];
-}
-function detectLanguage() {
-  try { const s = localStorage.getItem("zd_lang"); if (s) return s; const b = navigator.language?.split("-")[0]||"ru"; return LANGUAGES.find(l=>l.code===b)?b:"ru"; } catch { return "ru"; }
-}
-
-const UI_TEXT = {
-  ru: { home:"Главная", watch:"Смотреть", profile:"Профиль", search:"Найти сериал...", trending:"🔥 В тренде", all:"⭐ Все сериалы", continueW:"▶ Продолжить", episodes:"Серии", desc:"Описание", series:"серий", free:"бесплатно", premium:"Premium", wallet:"Мой кошелёк", topup:"Пополнить", history:"История просмотров", bookmarks:"Закладки", bonuses:"Центр бонусов", subtitles:"Субтитры", off:"Выкл", language:"Язык", episode:"Серия", next:"Следующая серия →", shop:"Магазин", coins:"Монеты", connect:"Подключить →" },
-  en: { home:"Home", watch:"Watch", profile:"Profile", search:"Search series...", trending:"🔥 Trending", all:"⭐ All Series", continueW:"▶ Continue", episodes:"Episodes", desc:"Description", series:"episodes", free:"free", premium:"Premium", wallet:"My Wallet", topup:"Top Up", history:"Watch History", bookmarks:"Bookmarks", bonuses:"Bonus Center", subtitles:"Subtitles", off:"Off", language:"Language", episode:"Episode", next:"Next Episode →", shop:"Shop", coins:"Coins", connect:"Subscribe →" },
-  th: { home:"หน้าหลัก", watch:"ดู", profile:"โปรไฟล์", search:"ค้นหาซีรีส์...", trending:"🔥 ยอดนิยม", all:"⭐ ทั้งหมด", continueW:"▶ ดูต่อ", episodes:"ตอน", desc:"คำอธิบาย", series:"ตอน", free:"ฟรี", premium:"พรีเมียม", wallet:"กระเป๋า", topup:"เติม", history:"ประวัติ", bookmarks:"บุ๊กมาร์ก", bonuses:"โบนัส", subtitles:"คำบรรยาย", off:"ปิด", language:"ภาษา", episode:"ตอนที่", next:"ตอนถัดไป →", shop:"ร้านค้า", coins:"เหรียญ", connect:"สมัคร →" },
-  zh: { home:"首页", watch:"观看", profile:"我的", search:"搜索...", trending:"🔥 热门", all:"⭐ 全部", continueW:"▶ 继续", episodes:"集数", desc:"简介", series:"集", free:"免费", premium:"会员", wallet:"钱包", topup:"充值", history:"历史", bookmarks:"收藏", bonuses:"奖励", subtitles:"字幕", off:"关闭", language:"语言", episode:"第", next:"下一集 →", shop:"商城", coins:"金币", connect:"订阅 →" },
-  de: { home:"Startseite", watch:"Ansehen", profile:"Profil", search:"Serie suchen...", trending:"🔥 Trends", all:"⭐ Alle", continueW:"▶ Weiter", episodes:"Folgen", desc:"Beschreibung", series:"Folgen", free:"kostenlos", premium:"Premium", wallet:"Wallet", topup:"Aufladen", history:"Verlauf", bookmarks:"Lesezeichen", bonuses:"Bonus", subtitles:"Untertitel", off:"Aus", language:"Sprache", episode:"Folge", next:"Nächste →", shop:"Shop", coins:"Münzen", connect:"Abonnieren →" },
-  fr: { home:"Accueil", watch:"Regarder", profile:"Profil", search:"Chercher...", trending:"🔥 Tendances", all:"⭐ Toutes", continueW:"▶ Continuer", episodes:"Épisodes", desc:"Description", series:"épisodes", free:"gratuit", premium:"Premium", wallet:"Portefeuille", topup:"Recharger", history:"Historique", bookmarks:"Favoris", bonuses:"Bonus", subtitles:"Sous-titres", off:"Désactivé", language:"Langue", episode:"Épisode", next:"Suivant →", shop:"Boutique", coins:"Pièces", connect:"S'abonner →" },
-};
-
-const Ico = ({ d, size=22, color="currentColor", fill="none", sw=1.8 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>
-);
-const IcoHome     = () => <Ico d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z M9 22V12h6v10"/>;
-const IcoPlay     = () => <Ico d="M5 3l14 9-14 9V3z" fill="currentColor" color="currentColor"/>;
-const IcoUser     = () => <Ico d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2 M12 11a4 4 0 100-8 4 4 0 000 8z"/>;
-const IcoSearch   = () => <Ico d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>;
-const IcoClose    = () => <Ico d="M18 6L6 18M6 6l12 12"/>;
-const IcoLock     = () => <Ico d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2zM7 11V7a5 5 0 0110 0v4"/>;
-const IcoCrown    = () => <Ico d="M2 20h20M5 20L3 8l4.5 4L12 4l4.5 8L21 8l-2 12" color={C.accent}/>;
-const IcoHistory  = () => <Ico d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>;
-const IcoBookmark = ({f}) => <Ico d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" fill={f?"currentColor":"none"}/>;
-
-const ZenLogo = ({ size=28 }) => (
-  <svg width={size*3.2} height={size} viewBox="0 0 96 28" fill="none">
-    <circle cx="14" cy="14" r="12" stroke={C.accent} strokeWidth="1.5"/>
-    <path d="M14 6 C14 6 8 10 8 14 C8 18 14 22 14 22 C14 22 20 18 20 14 C20 10 14 6 14 6Z" fill={C.accent} opacity="0.3"/>
-    <path d="M14 8 C14 8 10 12 10 16" stroke={C.accentLight} strokeWidth="1" strokeLinecap="round"/>
-    <path d="M14 8 C14 8 18 12 18 16" stroke={C.accentLight} strokeWidth="1" strokeLinecap="round"/>
-    <circle cx="14" cy="16" r="2" fill={C.accent}/>
-    <text x="30" y="19" fontFamily="system-ui,sans-serif" fontWeight="700" fontSize="14" fill={C.text} letterSpacing="0.5">Zen</text>
-    <text x="56" y="19" fontFamily="system-ui,sans-serif" fontWeight="300" fontSize="14" fill={C.accentLight} letterSpacing="0.5">Drama</text>
+// Icons
+const MenuIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>
   </svg>
 );
 
-const CoinIco = () => (
-  <svg width={15} height={15} viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="10" fill={C.accent}/>
-    <text x="12" y="16" textAnchor="middle" fontSize="10" fill="#fff" fontWeight="bold">円</text>
+const CloseIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
   </svg>
 );
 
-function Badge({ text }) {
-  const map = { "Эксклюзив":{ bg:"#1e1a40", color:C.accentLight }, "Хит":{ bg:"#3a1225", color:"#f472b6" }, "Новинка":{ bg:"#0d2e20", color:C.jade }, "18+":{ bg:"#2a1a2e", color:"#c084fc" } };
-  const s = map[text]||{ bg:"#1e1e2a", color:C.textMuted };
-  return <span style={{ background:s.bg, color:s.color, fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:4, letterSpacing:0.5 }}>{text}</span>;
-}
+const PlayIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M8 5v14l11-7z"/>
+  </svg>
+);
 
-function SeriesCard({ series, onClick, watchHistory }) {
-  const prog = watchHistory[series.id];
-  const pct = prog ? Math.round((prog/series.episodes)*100) : 0;
-  return (
-    <div onClick={() => onClick(series)} style={{ cursor:"pointer", borderRadius:10, overflow:"hidden", background:C.card, transition:"transform 0.18s" }}
-      onMouseEnter={e => e.currentTarget.style.transform="scale(1.03)"}
-      onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}
-    >
-      <div style={{ position:"relative", aspectRatio:"2/3" }}>
-        <img src={series.cover} alt={series.title} style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }}/>
-        <div style={{ position:"absolute", top:6, left:6 }}><Badge text={series.badge}/></div>
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,rgba(8,9,13,0.95))", padding:"22px 8px 8px" }}>
-          <div style={{ color:C.text, fontSize:12, fontWeight:700, lineHeight:1.3 }}>{series.title}</div>
-        </div>
-        {prog && <div style={{ position:"absolute", bottom:0, left:0, right:0, height:3, background:"#1e1e2a" }}>
-          <div style={{ height:"100%", width:`${pct}%`, background:C.accent }}/>
-        </div>}
-      </div>
-      <div style={{ padding:"5px 8px 8px", fontSize:11, color:C.textMuted }}>{series.genre} · {series.episodes} сер.</div>
-    </div>
-  );
-}
+const InfoIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+  </svg>
+);
 
-function EpRow({ ep, isLocked, coins, onUnlock, onWatch }) {
-  return (
-    <div style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 16px", borderBottom:`1px solid ${C.card2}` }}>
-      <div style={{ width:38, height:38, borderRadius:8, background:isLocked?"#1a1c24":`${C.accent}18`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-        {isLocked ? <IcoLock/> : <span style={{ color:C.accent, fontWeight:700 }}>{ep}</span>}
-      </div>
-      <div style={{ flex:1 }}>
-        <div style={{ color:isLocked?C.textMuted:C.text, fontSize:14 }}>Серия {ep}</div>
-        <div style={{ color:C.textDim, fontSize:11 }}>~2 мин</div>
-      </div>
-      {isLocked ? (
-        <button onClick={() => onUnlock(ep)} style={{ background:C.accent, color:"#fff", border:"none", borderRadius:20, padding:"5px 14px", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
-          <CoinIco/> 5
-        </button>
-      ) : (
-        <button onClick={() => onWatch(ep)} style={{ background:"transparent", border:`1px solid ${C.accent}`, color:C.accent, borderRadius:20, padding:"5px 14px", fontSize:12, cursor:"pointer" }}>
-          ▶ Смотреть
-        </button>
-      )}
-    </div>
-  );
-}
+const ChevronLeftIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m15 18-6-6 6-6"/>
+  </svg>
+);
 
-function parseSRT(srt) {
-  const blocks = srt.trim().split(/\n\n+/);
-  return blocks.map(block => {
-    const lines = block.trim().split('\n');
-    if (lines.length < 3) return null;
-    const time = lines[1].match(/(\d+):(\d+):(\d+)[,.](\d+) --> (\d+):(\d+):(\d+)[,.](\d+)/);
-    if (!time) return null;
-    const start = +time[1]*3600 + +time[2]*60 + +time[3] + +time[4]/1000;
-    const end   = +time[5]*3600 + +time[6]*60 + +time[7] + +time[8]/1000;
-    const text = lines.slice(2).join(' ').replace(/<[^>]+>/g,'');
-    return { start, end, text };
-  }).filter(Boolean);
-}
+const ChevronRightIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m9 18 6-6-6-6"/>
+  </svg>
+);
 
-function Player({ series, episode, onClose, onNext, appLang, t }) {
-  const videoRef     = useRef(null);
-  const hlsRef       = useRef(null);
-  const controlTimer = useRef(null);
-  const onNextRef    = useRef(onNext);
-  useEffect(() => { onNextRef.current = onNext; }, [onNext]);
+const SearchIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+  </svg>
+);
 
-  const [showControls, setShowControls] = useState(true);
-  const [currentSub,   setCurrentSub]   = useState('');
-  const [srtData,      setSrtData]       = useState([]);
-  const [isPlaying,    setIsPlaying]     = useState(false);
-  const [progress,     setProgress]      = useState(0);
-  const [currentTime,  setCurrentTime]   = useState('0:00');
-  const [duration,     setDuration]      = useState('0:00');
-  const [muted,        setMuted]         = useState(false);
-  const [quality,      setQuality]       = useState('Auto');
-  const [showQuality,  setShowQuality]   = useState(false);
-  const [isFullscreen, setIsFullscreen]  = useState(false);
-  const [showSubs,     setShowSubs]      = useState(true);
-  const [subLang,      setSubLang]       = useLS('zd_sublang', appLang);
-  const [showSubMenu,  setShowSubMenu]   = useState(false);
-  const [showNextBanner, setShowNextBanner] = useState(false);
-  const [nextCountdown,  setNextCountdown]  = useState(5);
+const GlobeIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+  </svg>
+);
 
-  const hlsUrl    = getBunnyUrl(series.id, episode);
-  const nextHlsUrl = getBunnyUrl(series.id, episode + 1);
-  const subUrl    = showSubs ? getSubtitleUrl(series.id, episode, subLang) : null;
+const HomeIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/>
+  </svg>
+);
 
-  function fmt(s) { if(!s||isNaN(s)) return '0:00'; return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
+const FilmIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/>
+  </svg>
+);
 
-  function toggleFullscreen() {
-    const el = document.documentElement;
-    if (!document.fullscreenElement) { el.requestFullscreen?.()||el.webkitRequestFullscreen?.(); setIsFullscreen(true); }
-    else { document.exitFullscreen?.()||document.webkitExitFullscreen?.(); setIsFullscreen(false); }
-  }
+const DownloadIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" x2="12" y1="15" y2="3"/>
+  </svg>
+);
 
-  useEffect(() => {
-    document.body.style.overflow='hidden'; document.body.style.position='fixed'; document.body.style.width='100%';
-    return () => { document.body.style.overflow=''; document.body.style.position=''; document.body.style.width=''; };
+const InfoIconNav = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+  </svg>
+);
+
+// Styles
+const styles = {
+  app: {
+    minHeight: '100vh',
+    backgroundColor: '#0a0a0a',
+    color: '#fafafa',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+  },
+  header: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 50,
+    backgroundColor: 'rgba(10, 10, 10, 0.95)',
+    backdropFilter: 'blur(8px)',
+    borderBottom: '1px solid rgba(255,255,255,0.1)',
+  },
+  headerContent: {
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '0 16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: '64px',
+  },
+  logo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    textDecoration: 'none',
+    color: 'inherit',
+  },
+  logoIcon: {
+    width: '32px',
+    height: '32px',
+    borderRadius: '8px',
+    backgroundColor: '#f97316',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 'bold',
+    fontSize: '18px',
+    color: '#0a0a0a',
+  },
+  logoText: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+  },
+  nav: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '32px',
+  },
+  navLink: {
+    fontSize: '14px',
+    fontWeight: '500',
+    color: '#a1a1aa',
+    textDecoration: 'none',
+    transition: 'color 0.2s',
+  },
+  navLinkActive: {
+    color: '#f97316',
+  },
+  headerActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+  },
+  iconButton: {
+    background: 'none',
+    border: 'none',
+    color: '#a1a1aa',
+    cursor: 'pointer',
+    padding: '8px',
+    borderRadius: '8px',
+  },
+  languageButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    background: 'none',
+    border: 'none',
+    color: '#a1a1aa',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  hero: {
+    position: 'relative',
+    width: '100%',
+    height: '600px',
+    overflow: 'hidden',
+  },
+  heroBackground: {
+    position: 'absolute',
+    inset: 0,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  },
+  heroGradient: {
+    position: 'absolute',
+    inset: 0,
+    background: 'linear-gradient(to right, #0a0a0a, rgba(10,10,10,0.8), transparent), linear-gradient(to top, #0a0a0a, transparent)',
+  },
+  heroContent: {
+    position: 'relative',
+    zIndex: 10,
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '0 16px',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  heroInfo: {
+    maxWidth: '500px',
+  },
+  hotBadge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    marginBottom: '16px',
+  },
+  badge: {
+    padding: '2px 8px',
+    fontSize: '12px',
+    fontWeight: '600',
+    backgroundColor: '#f97316',
+    color: '#0a0a0a',
+    borderRadius: '4px',
+  },
+  heroTitle: {
+    fontSize: 'clamp(28px, 5vw, 48px)',
+    fontWeight: 'bold',
+    marginBottom: '12px',
+    lineHeight: 1.2,
+  },
+  heroDescription: {
+    fontSize: '14px',
+    color: '#a1a1aa',
+    marginBottom: '24px',
+    lineHeight: 1.6,
+  },
+  heroMeta: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    fontSize: '14px',
+    color: '#a1a1aa',
+    marginBottom: '24px',
+  },
+  heroActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+  },
+  button: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 24px',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    border: 'none',
+  },
+  primaryButton: {
+    backgroundColor: '#f97316',
+    color: '#0a0a0a',
+  },
+  outlineButton: {
+    backgroundColor: 'transparent',
+    color: '#fafafa',
+    border: '1px solid rgba(255,255,255,0.2)',
+  },
+  section: {
+    padding: '24px 0',
+  },
+  sectionContainer: {
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '0 16px',
+  },
+  sectionHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '16px',
+  },
+  sectionTitle: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+  },
+  carouselNav: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  carouselButton: {
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    border: '1px solid rgba(255,255,255,0.2)',
+    background: 'transparent',
+    color: '#fafafa',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  carousel: {
+    display: 'flex',
+    gap: '12px',
+    overflowX: 'auto',
+    scrollBehavior: 'smooth',
+    paddingBottom: '8px',
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
+  },
+  card: {
+    flexShrink: 0,
+    width: '160px',
+    cursor: 'pointer',
+  },
+  cardPoster: {
+    position: 'relative',
+    aspectRatio: '2/3',
+    borderRadius: '8px',
+    overflow: 'hidden',
+    marginBottom: '8px',
+    backgroundColor: '#1a1a1a',
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    transition: 'transform 0.3s',
+  },
+  cardRating: {
+    position: 'absolute',
+    top: '8px',
+    right: '8px',
+    padding: '2px 6px',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    backdropFilter: 'blur(4px)',
+    borderRadius: '4px',
+    fontSize: '12px',
+    fontWeight: '500',
+    color: '#facc15',
+  },
+  cardTitle: {
+    fontSize: '14px',
+    fontWeight: '500',
+    marginBottom: '4px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  cardGenre: {
+    display: 'inline-block',
+    padding: '2px 8px',
+    fontSize: '12px',
+    backgroundColor: '#1a1a1a',
+    color: '#a1a1aa',
+    borderRadius: '4px',
+  },
+  footer: {
+    backgroundColor: 'rgba(26,26,26,0.5)',
+    borderTop: '1px solid rgba(255,255,255,0.1)',
+    marginTop: 'auto',
+  },
+  footerContent: {
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '40px 16px',
+  },
+  footerGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+    gap: '32px',
+  },
+  footerTitle: {
+    fontSize: '14px',
+    fontWeight: '600',
+    marginBottom: '16px',
+  },
+  footerLink: {
+    display: 'block',
+    fontSize: '14px',
+    color: '#a1a1aa',
+    textDecoration: 'none',
+    marginBottom: '8px',
+  },
+  socialLinks: {
+    display: 'flex',
+    gap: '12px',
+  },
+  socialIcon: {
+    width: '36px',
+    height: '36px',
+    borderRadius: '50%',
+    backgroundColor: '#1a1a1a',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#a1a1aa',
+    textDecoration: 'none',
+  },
+  appButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 12px',
+    backgroundColor: '#1a1a1a',
+    borderRadius: '8px',
+    marginBottom: '8px',
+    textDecoration: 'none',
+    color: 'inherit',
+  },
+  copyright: {
+    marginTop: '40px',
+    paddingTop: '24px',
+    borderTop: '1px solid rgba(255,255,255,0.1)',
+    textAlign: 'center',
+    fontSize: '12px',
+    color: '#a1a1aa',
+  },
+  mobileNav: {
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 50,
+    backgroundColor: 'rgba(10, 10, 10, 0.95)',
+    backdropFilter: 'blur(8px)',
+    borderTop: '1px solid rgba(255,255,255,0.1)',
+  },
+  mobileNavContent: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    height: '64px',
+  },
+  mobileNavItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '4px',
+    padding: '8px 12px',
+    color: '#a1a1aa',
+    textDecoration: 'none',
+    fontSize: '10px',
+    fontWeight: '500',
+  },
+  mobileNavItemActive: {
+    color: '#f97316',
+  },
+};
+
+// Components
+function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Загрузка видео
-  useEffect(() => {
-    if (!hlsUrl||!videoRef.current) return;
-    const video = videoRef.current;
-    setShowNextBanner(false);
-    setNextCountdown(5);
-    setProgress(0);
-    setCurrentTime('0:00');
+  return (
+    <header style={styles.header}>
+      <div style={styles.headerContent}>
+        <a href="/" style={styles.logo}>
+          <div style={styles.logoIcon}>Z</div>
+          {!isMobile && <span style={styles.logoText}>ZenDrama</span>}
+        </a>
 
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = hlsUrl;
-      video.load();
-      video.play().catch(()=>{});
-    } else {
-      if (hlsRef.current) { hlsRef.current.destroy(); hlsRef.current = null; }
-      const initHls = () => {
-        if (window.Hls?.isSupported()) {
-          const hls = new window.Hls({
-            enableWorker: false,
-            startLevel: -1,
-            abrEwmaDefaultEstimate: 5000000,
-          });
-          hls.loadSource(hlsUrl);
-          hls.attachMedia(video);
-          hls.on(window.Hls.Events.MANIFEST_PARSED, (e, d) => {
-            hls.currentLevel = d.levels.length - 1;
-            video.play().catch(()=>{});
-          });
-          hlsRef.current = hls;
-        }
-      };
-      if (window.Hls) { initHls(); }
-      else {
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js';
-        script.onload = initHls;
-        document.head.appendChild(script);
-      }
-    }
-    return () => { if(hlsRef.current){hlsRef.current.destroy();hlsRef.current=null;} };
-  }, [hlsUrl]);
+        {!isMobile && (
+          <nav style={styles.nav}>
+            <a href="/" style={{...styles.navLink, ...styles.navLinkActive}}>Home</a>
+            <a href="/genres" style={styles.navLink}>Genres</a>
+            <a href="/download" style={styles.navLink}>Download</a>
+            <a href="/about" style={styles.navLink}>About Us</a>
+          </nav>
+        )}
 
-  // Preload следующей серии
-  useEffect(() => {
-    if (!nextHlsUrl) return;
-    const link = document.createElement('link');
-    link.rel = 'preload'; link.as = 'fetch';
-    link.href = nextHlsUrl; link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
-    return () => { try { document.head.removeChild(link); } catch {} };
-  }, [nextHlsUrl]);
+        <div style={styles.headerActions}>
+          {!isMobile && (
+            <>
+              <button style={styles.iconButton}><SearchIcon /></button>
+              <button style={styles.languageButton}>
+                <GlobeIcon /> English
+              </button>
+            </>
+          )}
+          {isMobile && (
+            <button style={styles.iconButton} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+            </button>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
 
-  // Субтитры
-  useEffect(() => {
-    if (!subUrl) { setSrtData([]); setCurrentSub(''); return; }
-    fetch(subUrl).then(r=>r.text()).then(text=>setSrtData(parseSRT(text))).catch(()=>{});
-  }, [subUrl]);
+function HeroBanner({ drama }) {
+  return (
+    <section style={styles.hero}>
+      <div style={{...styles.heroBackground, backgroundImage: `url(${drama.poster})`}}>
+        <div style={styles.heroGradient} />
+      </div>
+      <div style={styles.heroContent}>
+        <div style={styles.heroInfo}>
+          <div style={styles.hotBadge}>
+            <span style={styles.badge}>Hot</span>
+            <span>🔥</span>
+          </div>
+          <h1 style={styles.heroTitle}>{drama.title}</h1>
+          {drama.description && (
+            <p style={styles.heroDescription}>{drama.description}</p>
+          )}
+          <div style={styles.heroMeta}>
+            {drama.year && <span>{drama.year}</span>}
+            {drama.episodes && <span>{drama.episodes} Episodes</span>}
+            {drama.rating && <span>★ {drama.rating}</span>}
+          </div>
+          <div style={styles.heroActions}>
+            <button style={{...styles.button, ...styles.primaryButton}}>
+              <PlayIcon /> Play
+            </button>
+            <button style={{...styles.button, ...styles.outlineButton}}>
+              <InfoIcon /> More Info
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-  // Timeupdate + ended
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    const onTime = () => {
-      const ct = video.currentTime;
-      setProgress(ct/(video.duration||1));
-      setCurrentTime(fmt(ct)); setDuration(fmt(video.duration));
-      const sub = srtData.find(s=>ct>=s.start&&ct<=s.end);
-      setCurrentSub(sub?sub.text:'');
-    };
-    const onEnded = () => {
-      if (nextHlsUrl) {
-        setShowNextBanner(true);
-        setNextCountdown(5);
-      } else {
-        onNextRef.current();
-      }
-    };
-    video.addEventListener('timeupdate', onTime);
-    video.addEventListener('play', ()=>setIsPlaying(true));
-    video.addEventListener('pause', ()=>setIsPlaying(false));
-    video.addEventListener('ended', onEnded);
-    return () => {
-      video.removeEventListener('timeupdate', onTime);
-      video.removeEventListener('ended', onEnded);
-    };
-  }, [srtData, nextHlsUrl]);
+function DramaCard({ drama }) {
+  return (
+    <div style={styles.card}>
+      <div style={styles.cardPoster}>
+        <img src={drama.poster} alt={drama.title} style={styles.cardImage} />
+        {drama.rating && (
+          <div style={styles.cardRating}>★ {drama.rating}</div>
+        )}
+      </div>
+      <h3 style={styles.cardTitle}>{drama.title}</h3>
+      <span style={styles.cardGenre}>{drama.genre}</span>
+    </div>
+  );
+}
 
-  // Countdown для баннера следующей серии
-  useEffect(() => {
-    if (!showNextBanner) return;
-    if (nextCountdown <= 0) { onNextRef.current(); return; }
-    const t = setTimeout(() => setNextCountdown(c => c-1), 1000);
-    return () => clearTimeout(t);
-  }, [showNextBanner, nextCountdown]);
+function DramaCarousel({ title, dramas }) {
+  const scrollRef = useRef(null);
 
-  function showCtrl() {
-    setShowControls(true);
-    clearTimeout(controlTimer.current);
-    controlTimer.current = setTimeout(()=>setShowControls(false), 3000);
-  }
-  useEffect(() => { showCtrl(); return ()=>clearTimeout(controlTimer.current); }, []);
-
-  function togglePlay() { const v=videoRef.current; if(!v) return; v.paused?v.play():v.pause(); showCtrl(); }
-
-  const glassBtn = (size=44) => ({
-    width:size, height:size, borderRadius:'50%', border:'none', cursor:'pointer',
-    background:'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.35), rgba(255,255,255,0.08))',
-    backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)',
-    boxShadow:'0 4px 20px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -1px 1px rgba(0,0,0,0.3)',
-    color:'#fff', display:'flex', alignItems:'center', justifyContent:'center',
-  });
-
-  const glassPill = {
-    background:'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.3), rgba(0,0,0,0.4))',
-    backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)',
-    boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.3)',
-    border:'none', color:'#fff', borderRadius:10, padding:'5px 10px',
-    fontSize:11, fontWeight:700, cursor:'pointer',
+  const scroll = (direction) => {
+    if (!scrollRef.current) return;
+    const amount = direction === 'left' ? -400 : 400;
+    scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
   };
 
   return (
-    <div onClick={showCtrl} style={{ position:'fixed', inset:0, background:'#000', zIndex:200, overflow:'hidden' }}>
-      {hlsUrl ? (
-        <video ref={videoRef} style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'contain' }} playsInline webkit-playsinline="true" preload="auto" poster={`https://vz-433c2f1e-a5b.b-cdn.net/${VIDEO_MAP[series.id]?.[episode]}/thumbnail.jpg`}/>
-      ) : (
-        <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column' }}>
-          <div style={{ fontSize:56 }}>🎬</div>
-          <div style={{ color:C.textMuted, fontSize:14, marginTop:12 }}>Видео скоро появится</div>
-        </div>
-      )}
-
-      {/* Баннер следующей серии */}
-      {showNextBanner && (
-        <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.88)', zIndex:50, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:24 }}>
-          <div style={{ color:'rgba(255,255,255,0.6)', fontSize:14, letterSpacing:2, textTransform:'uppercase' }}>Следующая серия</div>
-          <div style={{ color:'#fff', fontSize:72, fontWeight:900, lineHeight:1 }}>{nextCountdown}</div>
-          <div style={{ color:C.accentLight, fontSize:16, fontWeight:600 }}>{series.title} — {t.episode} {episode+1}</div>
-          <button onClick={e=>{e.stopPropagation();setShowNextBanner(false);onNextRef.current();}} style={{ background:C.accent, color:'#fff', border:'none', borderRadius:14, padding:'16px 48px', fontSize:17, fontWeight:800, cursor:'pointer', marginTop:8 }}>
-            ▶ Смотреть
-          </button>
-          <button onClick={e=>{e.stopPropagation();setShowNextBanner(false);onClose();}} style={{ background:'transparent', color:'rgba(255,255,255,0.4)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:10, padding:'10px 32px', fontSize:13, cursor:'pointer' }}>
-            Выйти
-          </button>
-        </div>
-      )}
-
-      {currentSub && showSubs && (
-        <div style={{ position:'absolute', bottom:'12%', left:'4%', right:'4%', textAlign:'center', zIndex:6, pointerEvents:'none' }}>
-          <span style={{ color:'#fff', fontSize:24, fontWeight:800, lineHeight:1.4, fontFamily:'-apple-system, BlinkMacSystemFont, \'SF Pro Display\', sans-serif', textShadow:'0 0 10px #000,0 0 10px #000,0 0 10px #000,1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000' }}>
-            {currentSub}
-          </span>
-        </div>
-      )}
-
-      <div style={{ position:'absolute', inset:0, zIndex:10, opacity:showControls?1:0, transition:'opacity 0.3s', pointerEvents:showControls?'auto':'none' }}>
-        <div style={{ position:'absolute', top:0, left:0, right:0, background:'linear-gradient(rgba(0,0,0,0.7),transparent)', padding:'16px', display:'flex', alignItems:'center', gap:12 }}>
-          <button onClick={e=>{e.stopPropagation();onClose();}} style={{...glassBtn(40),flexShrink:0}}><IcoClose/></button>
-          <span style={{ color:'#fff', fontSize:13, fontWeight:600 }}>{series.title} — {t.episode} {episode}</span>
-        </div>
-
-        <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', display:'flex', alignItems:'center', gap:28 }}>
-          <button onClick={e=>{e.stopPropagation();const v=videoRef.current;if(v)v.currentTime=Math.max(0,v.currentTime-10);showCtrl();}} style={{...glassBtn(54),flexDirection:'column',gap:1,fontSize:11,fontWeight:700}}>
-            <span style={{fontSize:20,lineHeight:1}}>↺</span><span>10</span>
-          </button>
-          <button onClick={e=>{e.stopPropagation();togglePlay();}} style={{ width:70,height:70,borderRadius:'50%',border:'none',cursor:'pointer',fontSize:26,color:'#fff', background:'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.45), rgba(124,106,247,0.6))', backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)', boxShadow:'0 6px 30px rgba(124,106,247,0.6), inset 0 2px 2px rgba(255,255,255,0.5)', display:'flex',alignItems:'center',justifyContent:'center' }}>
-            {isPlaying?'⏸':'▶'}
-          </button>
-          <button onClick={e=>{e.stopPropagation();const v=videoRef.current;if(v)v.currentTime=Math.min(v.duration||999,v.currentTime+10);showCtrl();}} style={{...glassBtn(54),flexDirection:'column',gap:1,fontSize:11,fontWeight:700}}>
-            <span style={{fontSize:20,lineHeight:1}}>↻</span><span>10</span>
-          </button>
-        </div>
-
-        <div style={{ position:'absolute', bottom:90, right:16, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
-          <div style={{ position:'relative' }}>
-            <button onClick={e=>{e.stopPropagation();setShowQuality(v=>!v);setShowSubMenu(false);showCtrl();}} style={glassPill}>{quality}</button>
-            {showQuality && (
-              <div style={{ position:'absolute', bottom:36, right:0, background:'rgba(10,10,20,0.97)', borderRadius:10, overflow:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.6)', border:'1px solid rgba(255,255,255,0.1)', minWidth:80 }}>
-                {['Auto','1080p','720p','480p'].map(q => (
-                  <div key={q} onClick={e=>{e.stopPropagation();setQuality(q);setShowQuality(false);showCtrl();}} style={{ padding:'8px 16px', color:quality===q?C.accent:'#fff', fontSize:13, cursor:'pointer', background:quality===q?`${C.accent}18`:'transparent' }}>{q}</div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div style={{ position:'relative' }}>
-            <button onClick={e=>{e.stopPropagation();setShowSubMenu(v=>!v);setShowQuality(false);showCtrl();}} style={{ ...glassPill, background:showSubs?'radial-gradient(circle at 35% 35%, rgba(124,106,247,0.6), rgba(124,106,247,0.3))':'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.3), rgba(0,0,0,0.4))' }}>
-              CC {showSubs ? LANGUAGES.find(l=>l.code===subLang)?.flag : ''}
+    <section style={styles.section}>
+      <div style={styles.sectionContainer}>
+        <div style={styles.sectionHeader}>
+          <h2 style={styles.sectionTitle}>{title}</h2>
+          <div style={styles.carouselNav}>
+            <button style={styles.carouselButton} onClick={() => scroll('left')}>
+              <ChevronLeftIcon />
             </button>
-            {showSubMenu && (
-              <div style={{ position:'absolute', bottom:36, right:0, background:'rgba(10,10,20,0.97)', borderRadius:10, overflow:'hidden', boxShadow:'0 4px 20px rgba(0,0,0,0.6)', border:'1px solid rgba(255,255,255,0.1)', minWidth:150 }}>
-                <div onClick={e=>{e.stopPropagation();setShowSubs(false);setShowSubMenu(false);showCtrl();}} style={{ padding:'8px 16px', color:!showSubs?C.accent:'#fff', fontSize:13, cursor:'pointer', display:'flex', alignItems:'center', gap:8 }}>
-                  🚫 {t.off}
-                </div>
-                {LANGUAGES.map(lang => {
-                  const hasUrl = !!getSubtitleUrl(series.id, episode, lang.code);
-                  return (
-                    <div key={lang.code} onClick={e=>{if(!hasUrl)return;e.stopPropagation();setSubLang(lang.code);setShowSubs(true);setShowSubMenu(false);showCtrl();}} style={{ padding:'8px 16px', color:showSubs&&subLang===lang.code?C.accent:hasUrl?'#fff':C.textDim, fontSize:13, cursor:hasUrl?'pointer':'default', display:'flex', alignItems:'center', gap:8, background:showSubs&&subLang===lang.code?`${C.accent}18`:'transparent' }}>
-                      {lang.flag} {lang.name} {!hasUrl&&<span style={{fontSize:10,color:C.textDim}}>(скоро)</span>}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          <button onClick={e=>{e.stopPropagation();setMuted(v=>{const nm=!v;if(videoRef.current)videoRef.current.muted=nm;return nm;});showCtrl();}} style={{...glassBtn(44),fontSize:18}}>{muted?'🔇':'🔊'}</button>
-          <button onClick={e=>{e.stopPropagation();toggleFullscreen();showCtrl();}} style={{...glassBtn(44),fontSize:18}}>{isFullscreen?'⤡':'⤢'}</button>
-        </div>
-
-        <div style={{ position:'absolute', bottom:80, left:16, right:16 }}>
-          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
-            <span style={{ color:'rgba(255,255,255,0.8)', fontSize:12 }}>{currentTime}</span>
-            <span style={{ color:'rgba(255,255,255,0.5)', fontSize:12 }}>{duration}</span>
-          </div>
-          <div style={{ height:3, background:'rgba(255,255,255,0.2)', borderRadius:2, cursor:'pointer' }}
-            onClick={e=>{e.stopPropagation();const rect=e.currentTarget.getBoundingClientRect();const pct=(e.clientX-rect.left)/rect.width;const v=videoRef.current;if(v)v.currentTime=pct*v.duration;}}>
-            <div style={{ width:`${progress*100}%`, height:'100%', background:C.accent, borderRadius:2, position:'relative' }}>
-              <div style={{ position:'absolute', right:-4, top:-3, width:9, height:9, borderRadius:'50%', background:'#fff', boxShadow:`0 0 6px ${C.accent}` }}/>
-            </div>
-          </div>
-        </div>
-
-        <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'linear-gradient(transparent,rgba(0,0,0,0.8))', padding:'30px 16px 20px' }}>
-          <button onClick={e=>{e.stopPropagation();onNextRef.current();}} style={{ width:'100%', background:C.accent, color:'#fff', border:'none', borderRadius:10, padding:'13px', fontSize:15, fontWeight:700, cursor:'pointer' }}>{t.next}</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function LangPicker({ current, onSelect, onClose, t }) {
-  return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:200, display:"flex", alignItems:"flex-end" }}>
-      <div style={{ width:"100%", background:C.card, borderRadius:"20px 20px 0 0", padding:"20px 16px 32px" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-          <div style={{ color:C.text, fontWeight:800, fontSize:16 }}>{t.language}</div>
-          <button onClick={onClose} style={{ background:"none", border:"none", color:C.textMuted, cursor:"pointer" }}><IcoClose/></button>
-        </div>
-        {LANGUAGES.map(lang => (
-          <div key={lang.code} onClick={()=>{onSelect(lang.code);onClose();}} style={{ display:"flex", alignItems:"center", gap:14, padding:"12px 8px", borderRadius:10, cursor:"pointer", marginBottom:4, background:current===lang.code?`${C.accent}18`:"transparent", border:`1px solid ${current===lang.code?C.accent:"transparent"}` }}>
-            <span style={{ fontSize:24 }}>{lang.flag}</span>
-            <span style={{ color:C.text, fontSize:15 }}>{lang.name}</span>
-            {current===lang.code&&<span style={{ marginLeft:"auto", color:C.accent }}>✓</span>}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SeriesModal({ series, onClose, vip, coins, setCoins, watchHistory, setWatchHistory, appLang, t }) {
-  const [tab, setTab] = useState("episodes");
-  const [playerEp, setPlayerEp] = useState(null);
-  const [bookmarked, setBookmarked] = useLS(`bm_${series.id}`, false);
-
-  useEffect(() => { document.body.style.overflow="hidden"; return ()=>{ document.body.style.overflow=""; }; }, []);
-
-  function handleUnlock(ep) {
-    if(coins<5){alert("Недостаточно монет!");return;}
-    setCoins(coins-5);
-    setWatchHistory({...watchHistory,[series.id]:Math.max(watchHistory[series.id]||series.freeEpisodes,ep)});
-  }
-  function handleWatch(ep) {
-    setPlayerEp(ep);
-    if(ep>(watchHistory[series.id]||0)) setWatchHistory({...watchHistory,[series.id]:ep});
-  }
-
-  if(playerEp) return (
-    <Player series={series} episode={playerEp} onClose={()=>setPlayerEp(null)} appLang={appLang} t={t}
-      onNext={()=>{
-        const next=playerEp+1;
-        if(next>series.episodes)return;
-        const unl=vip?series.episodes:Math.max(watchHistory[series.id]||0, getDripEpisodes(series.id, series.freeEpisodes));
-        if(next<=unl){ handleWatch(next); }
-      }}/>
-  );
-
-  const unlockedEps = vip?series.episodes:(watchHistory[series.id]||series.freeEpisodes);
-
-  return (
-    <div style={{ position:"fixed", inset:0, background:C.bg, zIndex:50, overflowY:"auto" }}>
-      <div style={{ position:"relative", height:300 }}>
-        <img src={series.cover} alt={series.title} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-        <div style={{ position:"absolute", inset:0, background:`linear-gradient(transparent 20%,${C.bg})` }}/>
-        <button onClick={onClose} style={{ position:"absolute", top:16, left:16, background:"rgba(0,0,0,0.6)", border:"none", color:"#fff", borderRadius:"50%", width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer" }}><IcoClose/></button>
-        <button onClick={()=>setBookmarked(!bookmarked)} style={{ position:"absolute", top:16, right:16, background:"rgba(0,0,0,0.6)", border:"none", color:bookmarked?C.accent:"#fff", borderRadius:"50%", width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer" }}><IcoBookmark f={bookmarked}/></button>
-      </div>
-      <div style={{ padding:"0 16px 32px" }}>
-        <div style={{ display:"flex", gap:8, marginBottom:8, flexWrap:"wrap", alignItems:"center" }}>
-          <Badge text={series.badge}/>
-          <span style={{ color:C.textMuted, fontSize:12 }}>{series.genre}</span>
-          <span style={{ color:"#fbbf24", fontSize:12 }}>★ {series.rating}</span>
-        </div>
-        <h2 style={{ color:C.text, fontSize:21, fontWeight:800, margin:"0 0 8px" }}>{series.title}</h2>
-        <p style={{ color:C.textMuted, fontSize:13, margin:"0 0 14px", lineHeight:1.65 }}>{series.desc}</p>
-        <div style={{ color:C.textDim, fontSize:12, marginBottom:18 }}>{series.episodes} {t.series} · Первые {series.freeEpisodes} {t.free}</div>
-        <button onClick={()=>handleWatch(watchHistory[series.id]||1)} style={{ width:"100%", background:C.accent, color:"#fff", border:"none", borderRadius:12, padding:"13px", fontSize:15, fontWeight:800, cursor:"pointer", marginBottom:22, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-          ▶ {watchHistory[series.id]?`Продолжить с серии ${watchHistory[series.id]}`:"Смотреть"}
-        </button>
-        <div style={{ display:"flex", borderBottom:`1px solid ${C.card2}` }}>
-          {["episodes","info"].map(tb=>(
-            <button key={tb} onClick={()=>setTab(tb)} style={{ flex:1, background:"none", border:"none", color:tab===tb?C.accent:C.textMuted, borderBottom:tab===tb?`2px solid ${C.accent}`:"2px solid transparent", padding:"10px", fontSize:14, cursor:"pointer", fontWeight:tab===tb?700:400 }}>
-              {tb==="episodes"?t.episodes:t.desc}
+            <button style={styles.carouselButton} onClick={() => scroll('right')}>
+              <ChevronRightIcon />
             </button>
+          </div>
+        </div>
+        <div ref={scrollRef} style={styles.carousel}>
+          {dramas.map((drama) => (
+            <DramaCard key={drama.id} drama={drama} />
           ))}
         </div>
-        {tab==="episodes"&&(
-          <>
-            {!vip&&(
-              <div style={{ background:`${C.accent}12`, border:`1px solid ${C.accent}30`, borderRadius:10, padding:"12px 16px", margin:"12px 0", display:"flex", alignItems:"center", gap:12 }}>
-                <IcoCrown/>
-                <div style={{ flex:1 }}>
-                  <div style={{ color:C.accent, fontWeight:700, fontSize:13 }}>ZenDrama {t.premium}</div>
-                  <div style={{ color:C.textMuted, fontSize:11 }}>От 99 ₽/неделю</div>
-                </div>
-              </div>
-            )}
-            {Array.from({length:series.episodes},(_,i)=>i+1).map(ep=>(
-              <EpRow key={ep} ep={ep} isLocked={ep>unlockedEps} coins={coins} onUnlock={handleUnlock} onWatch={handleWatch}/>
-            ))}
-          </>
-        )}
-        {tab==="info"&&(
-          <div style={{ padding:"16px 0", color:C.textMuted, fontSize:14, lineHeight:1.8 }}>
-            <div style={{ marginBottom:10 }}><strong style={{ color:C.text }}>Жанр:</strong> {series.genre}</div>
-            <div style={{ marginBottom:10 }}><strong style={{ color:C.text }}>Серий:</strong> {series.episodes}</div>
-            <div style={{ marginBottom:10 }}><strong style={{ color:C.text }}>Рейтинг:</strong> ★ {series.rating}</div>
-            <div><strong style={{ color:C.text }}>Описание:</strong><br/>{series.desc}</div>
-          </div>
-        )}
       </div>
-    </div>
+    </section>
   );
 }
 
-function ShopModal({ coins, setCoins, vip, setVip, onClose, t }) {
-  const [tab, setTab] = useState("vip");
+function Footer() {
   return (
-    <div style={{ position:"fixed", inset:0, background:C.bg, zIndex:50, overflowY:"auto" }}>
-      <div style={{ padding:"16px 16px 0", display:"flex", alignItems:"center", gap:12 }}>
-        <button onClick={onClose} style={{ background:"none", border:"none", color:"#fff", cursor:"pointer" }}><IcoClose/></button>
-        <h2 style={{ color:C.text, fontSize:18, fontWeight:800, margin:0 }}>{t.shop}</h2>
-      </div>
-      <div style={{ display:"flex", margin:"16px", borderRadius:10, overflow:"hidden", background:C.card }}>
-        {["vip","coins"].map(tb=>(
-          <button key={tb} onClick={()=>setTab(tb)} style={{ flex:1, padding:"10px", background:tab===tb?C.accent:"transparent", color:tab===tb?"#fff":C.textMuted, border:"none", fontWeight:700, fontSize:14, cursor:"pointer" }}>
-            {tb==="vip"?`👑 ${t.premium}`:`🪙 ${t.coins}`}
-          </button>
-        ))}
-      </div>
-      <div style={{ padding:"0 16px 32px" }}>
-        {tab==="vip"&&(
-          <>
-            <div style={{ background:`${C.accent}15`, border:`1px solid ${C.accent}35`, borderRadius:16, padding:20, marginBottom:22 }}>
-              <div style={{ color:C.accent, fontSize:17, fontWeight:800, marginBottom:10 }}>👑 ZenDrama {t.premium}</div>
-              {["Безлимитный просмотр","Без рекламы","Ранняя загрузка","Premium-баллы"].map(f=>(
-                <div key={f} style={{ color:C.textMuted, fontSize:13, display:"flex", gap:8, marginBottom:5 }}><span style={{ color:C.jade }}>✓</span>{f}</div>
-              ))}
+    <footer style={styles.footer}>
+      <div style={styles.footerContent}>
+        <div style={styles.footerGrid}>
+          <div>
+            <h3 style={styles.footerTitle}>About</h3>
+            <a href="/terms" style={styles.footerLink}>User Agreement</a>
+            <a href="/privacy" style={styles.footerLink}>Privacy Policy</a>
+            <a href="/faq" style={styles.footerLink}>FAQ</a>
+          </div>
+          <div>
+            <h3 style={styles.footerTitle}>Contact us</h3>
+            <a href="mailto:support@zendramas.org" style={styles.footerLink}>
+              support@zendramas.org
+            </a>
+          </div>
+          <div>
+            <h3 style={styles.footerTitle}>Community</h3>
+            <div style={styles.socialLinks}>
+              <a href="#" style={styles.socialIcon}>f</a>
+              <a href="#" style={styles.socialIcon}>▶</a>
+              <a href="#" style={styles.socialIcon}>📷</a>
+              <a href="#" style={styles.socialIcon}>𝕏</a>
             </div>
-            {VIP_PLANS.map(plan=>(
-              <div key={plan.id} onClick={()=>{setVip(true);onClose();alert(`Premium "${plan.name}" подключён!`);}} style={{ background:plan.popular?`${C.accent}12`:C.card, border:`${plan.popular?2:1}px solid ${plan.popular?C.accent:C.card2}`, borderRadius:12, padding:"14px 16px", marginBottom:12, display:"flex", alignItems:"center", cursor:"pointer" }}>
-                <div style={{ flex:1 }}>
-                  <div style={{ color:C.text, fontWeight:700, fontSize:15 }}>{plan.name}{plan.popular&&<span style={{ background:C.red, color:"#fff", fontSize:10, padding:"2px 7px", borderRadius:4, marginLeft:8 }}>Популярно</span>}</div>
-                  <div style={{ color:C.textMuted, fontSize:12 }}>{plan.period}{plan.save?` · ${plan.save}`:""}</div>
-                </div>
-                <div style={{ color:C.accent, fontWeight:800, fontSize:18 }}>{plan.price}</div>
-              </div>
-            ))}
-          </>
-        )}
-        {tab==="coins"&&(
-          <>
-            <div style={{ background:C.card, borderRadius:12, padding:16, marginBottom:18, display:"flex", alignItems:"center", gap:14 }}>
-              <CoinIco/>
+          </div>
+          <div>
+            <h3 style={styles.footerTitle}>Download App</h3>
+            <a href="#" style={styles.appButton}>
+              <span>🍎</span>
               <div>
-                <div style={{ color:C.textMuted, fontSize:12 }}>Ваш баланс</div>
-                <div style={{ color:C.accent, fontWeight:800, fontSize:22 }}>{coins} монет</div>
+                <div style={{fontSize: '10px', color: '#a1a1aa'}}>Download on the</div>
+                <div style={{fontSize: '12px', fontWeight: '600'}}>App Store</div>
               </div>
-            </div>
-            {COINS_PACKAGES.map(pkg=>(
-              <div key={pkg.id} onClick={()=>{setCoins(coins+pkg.coins);alert(`+${pkg.coins} монет!`);}} style={{ background:pkg.popular?`${C.accent}12`:C.card, border:`${pkg.popular?2:1}px solid ${pkg.popular?C.accent:C.card2}`, borderRadius:12, padding:"14px 16px", marginBottom:12, display:"flex", alignItems:"center", cursor:"pointer" }}>
-                <div style={{ flex:1 }}>
-                  <div style={{ color:C.text, fontWeight:700, fontSize:15 }}>🪙 {pkg.coins} монет{pkg.popular&&<span style={{ background:C.red, color:"#fff", fontSize:10, padding:"2px 7px", borderRadius:4, marginLeft:8 }}>Выгодно</span>}</div>
-                  {pkg.bonus&&<div style={{ color:C.jade, fontSize:12 }}>{pkg.bonus}</div>}
-                </div>
-                <div style={{ color:C.accent, fontWeight:800, fontSize:18 }}>{pkg.price}</div>
+            </a>
+            <a href="#" style={styles.appButton}>
+              <span>▶</span>
+              <div>
+                <div style={{fontSize: '10px', color: '#a1a1aa'}}>Get it on</div>
+                <div style={{fontSize: '12px', fontWeight: '600'}}>Google Play</div>
               </div>
-            ))}
-          </>
-        )}
+            </a>
+          </div>
+        </div>
+        <div style={styles.copyright}>
+          © {new Date().getFullYear()} ZenDrama. All rights reserved.
+        </div>
       </div>
-    </div>
+    </footer>
   );
 }
 
-export default function App() {
-  const [tab, setTab]           = useState("home");
-  const [selected, setSelected] = useState(null);
-  const [showShop, setShowShop] = useState(false);
-  const [showLangPicker, setShowLangPicker] = useState(false);
-  const [searchQ, setSearchQ]   = useState("");
-  const [genre, setGenre]       = useState("Все");
-  const [coins, setCoins]       = useLS("zd_coins", 9);
-  const [vip, setVip]           = useLS("zd_vip", false);
-  const [history, setHistory]   = useLS("zd_history", {});
-  const [appLang, setAppLang]   = useLS("zd_lang", detectLanguage());
+function MobileNav() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  const t = UI_TEXT[appLang]||UI_TEXT.ru;
-  useEffect(()=>{ setGenre("Все"); }, [appLang]);
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-  const filtered = SERIES_DATA.filter(s=>s.title.toLowerCase().includes(searchQ.toLowerCase()));
-  const trending = [...SERIES_DATA].filter(s=>s.trending).sort((a,b)=>a.trending-b.trending);
-  const continueList = SERIES_DATA.filter(s=>Object.keys(history).map(Number).includes(s.id));
+  if (!isMobile) return null;
+
+  const navItems = [
+    { icon: HomeIcon, label: 'Home', active: true },
+    { icon: FilmIcon, label: 'Genres' },
+    { icon: SearchIcon, label: 'Search' },
+    { icon: DownloadIcon, label: 'Download' },
+    { icon: InfoIconNav, label: 'About' },
+  ];
 
   return (
-    <div style={{ background:C.bg, minHeight:"100vh", maxWidth:430, margin:"0 auto", fontFamily:"system-ui,sans-serif", paddingBottom:70, color:C.text }}>
-      {showLangPicker&&<LangPicker current={appLang} onSelect={setAppLang} onClose={()=>setShowLangPicker(false)} t={t}/>}
-      {selected&&<SeriesModal series={selected} onClose={()=>setSelected(null)} vip={vip} coins={coins} setCoins={setCoins} watchHistory={history} setWatchHistory={setHistory} appLang={appLang} t={t}/>}
-      {showShop&&<ShopModal coins={coins} setCoins={setCoins} vip={vip} setVip={setVip} onClose={()=>setShowShop(false)} t={t}/>}
-
-      {tab==="home"&&(
-        <div>
-          <div style={{ padding:"14px 16px 10px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-            <ZenLogo size={26}/>
-            <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-              <button onClick={()=>setShowLangPicker(true)} style={{ background:C.card, border:`1px solid ${C.card2}`, borderRadius:20, padding:"5px 10px", fontSize:13, cursor:"pointer" }}>
-                {LANGUAGES.find(l=>l.code===appLang)?.flag}
-              </button>
-              {vip&&<div style={{ color:C.accent, fontSize:11, fontWeight:700, background:`${C.accent}15`, borderRadius:20, padding:"4px 10px", border:`1px solid ${C.accent}35` }}>👑 {t.premium}</div>}
-              <button onClick={()=>setShowShop(true)} style={{ background:C.accent, color:"#fff", border:"none", borderRadius:20, padding:"5px 13px", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:4 }}>
-                <CoinIco/> {coins}
-              </button>
-            </div>
-          </div>
-
-          <div style={{ margin:"0 16px 14px", position:"relative" }}>
-            <div style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:C.textMuted }}><IcoSearch/></div>
-            <input value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder={t.search} style={{ width:"100%", background:C.card, border:`1px solid ${C.card2}`, borderRadius:10, padding:"10px 12px 10px 44px", color:C.text, fontSize:14, outline:"none", boxSizing:"border-box" }}/>
-          </div>
-
-          <div style={{ display:"flex", gap:8, padding:"0 16px 16px", overflowX:"auto", scrollbarWidth:"none" }}>
-            {GENRES.map(g=>(
-              <button key={g} onClick={()=>setGenre(g)} style={{ background:genre===g?C.accent:`${C.accent}15`, color:genre===g?"#fff":C.accentLight, border:`1px solid ${genre===g?C.accent:C.accent+"30"}`, borderRadius:20, padding:"6px 14px", fontSize:12, fontWeight:genre===g?700:400, cursor:"pointer", whiteSpace:"nowrap", flexShrink:0 }}>{g}</button>
-            ))}
-          </div>
-
-          {!searchQ&&(
-            <>
-              <div style={{ padding:"0 16px 10px", color:C.text, fontSize:15, fontWeight:700 }}>{t.trending}</div>
-              <div style={{ display:"flex", gap:10, padding:"0 16px 20px", overflowX:"auto", scrollbarWidth:"none" }}>
-                {trending.map(s=>(
-                  <div key={s.id} onClick={()=>setSelected(s)} style={{ flexShrink:0, width:120, cursor:"pointer" }}>
-                    <div style={{ position:"relative", borderRadius:10, overflow:"hidden", aspectRatio:"2/3" }}>
-                      <img src={s.cover} alt={s.title} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                      <div style={{ position:"absolute", top:6, left:6, width:22, height:22, background:C.accent, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:900, fontSize:12 }}>{s.trending}</div>
-                      <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,rgba(8,9,13,0.95))", padding:"18px 6px 6px" }}>
-                        <div style={{ color:C.text, fontSize:11, fontWeight:700 }}>{s.title}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {continueList.length>0&&(
-                <>
-                  <div style={{ padding:"0 16px 10px", color:C.text, fontSize:15, fontWeight:700 }}>{t.continueW}</div>
-                  <div style={{ display:"flex", gap:10, padding:"0 16px 20px", overflowX:"auto", scrollbarWidth:"none" }}>
-                    {continueList.map(s=>{
-                      const ep=history[s.id]||0;
-                      const pct=Math.round((ep/s.episodes)*100);
-                      return (
-                        <div key={s.id} onClick={()=>setSelected(s)} style={{ flexShrink:0, width:120, cursor:"pointer" }}>
-                          <div style={{ position:"relative", borderRadius:10, overflow:"hidden", aspectRatio:"2/3" }}>
-                            <img src={s.cover} alt={s.title} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                            <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,rgba(8,9,13,0.95))", padding:"18px 6px 6px" }}>
-                              <div style={{ color:C.text, fontSize:10, fontWeight:700 }}>{s.title}</div>
-                              <div style={{ color:C.accent, fontSize:10 }}>Сер. {ep}/{s.episodes}</div>
-                            </div>
-                            <div style={{ position:"absolute", bottom:0, left:0, right:0, height:3, background:"#1e1e2a" }}>
-                              <div style={{ height:"100%", width:`${pct}%`, background:C.accent }}/>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-              <div style={{ padding:"0 16px 10px", color:C.text, fontSize:15, fontWeight:700 }}>{t.all}</div>
-            </>
-          )}
-
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, padding:"0 16px" }}>
-            {filtered.map(s=><SeriesCard key={s.id} series={s} onClick={setSelected} watchHistory={history}/>)}
-          </div>
-        </div>
-      )}
-
-      {tab==="watch"&&(
-        <div style={{ padding:16 }}>
-          <h2 style={{ color:C.text, fontSize:18, fontWeight:800, margin:"0 0 16px" }}>{t.watch}</h2>
-          {continueList.length===0?(
-            <div style={{ textAlign:"center", color:C.textMuted, marginTop:80 }}>
-              <div style={{ fontSize:48, marginBottom:12 }}>📺</div>
-              <div>История просмотров пуста</div>
-            </div>
-          ):continueList.map(s=>{
-            const ep=history[s.id]||0;
-            const pct=Math.round((ep/s.episodes)*100);
-            return (
-              <div key={s.id} onClick={()=>setSelected(s)} style={{ display:"flex", gap:12, marginBottom:14, cursor:"pointer", background:C.card, borderRadius:10, overflow:"hidden" }}>
-                <div style={{ position:"relative", width:90, flexShrink:0 }}>
-                  <img src={s.cover} alt={s.title} style={{ width:90, height:130, objectFit:"cover", display:"block" }}/>
-                  <div style={{ position:"absolute", bottom:0, left:0, right:0, height:3, background:"#1e1e2a" }}>
-                    <div style={{ height:"100%", width:`${pct}%`, background:C.accent }}/>
-                  </div>
-                </div>
-                <div style={{ padding:"12px 12px 12px 0", flex:1 }}>
-                  <div style={{ color:C.text, fontWeight:700, fontSize:14, marginBottom:4 }}>{s.title}</div>
-                  <div style={{ color:C.accent, fontSize:12 }}>Серия {ep} из {s.episodes}</div>
-                  <div style={{ color:C.textMuted, fontSize:11, marginTop:4 }}>{s.genre}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {tab==="profile"&&(
-        <div style={{ padding:16 }}>
-          <h2 style={{ color:C.text, fontSize:18, fontWeight:800, margin:"0 0 20px" }}>{t.profile}</h2>
-          {!vip?(
-            <div onClick={()=>setShowShop(true)} style={{ background:`${C.accent}12`, border:`1px solid ${C.accent}35`, borderRadius:14, padding:16, marginBottom:16, cursor:"pointer" }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                <div>
-                  <div style={{ color:C.accent, fontWeight:800, fontSize:15 }}>👑 ZenDrama {t.premium}</div>
-                  <div style={{ color:C.textMuted, fontSize:12, marginTop:2 }}>Безлимитный доступ</div>
-                </div>
-                <div style={{ background:C.accent, color:"#fff", borderRadius:20, padding:"6px 14px", fontSize:12, fontWeight:700 }}>{t.connect}</div>
-              </div>
-            </div>
-          ):(
-            <div style={{ background:`${C.accent}15`, border:`2px solid ${C.accent}`, borderRadius:14, padding:16, marginBottom:16 }}>
-              <div style={{ color:C.accent, fontWeight:800, fontSize:15 }}>👑 Premium активен</div>
-            </div>
-          )}
-          <div style={{ background:C.card, borderRadius:14, padding:16, marginBottom:16 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-              <div style={{ color:C.text, fontWeight:700 }}>{t.wallet}</div>
-              <button onClick={()=>setShowShop(true)} style={{ background:C.accent, color:"#fff", border:"none", borderRadius:20, padding:"5px 14px", fontSize:12, fontWeight:700, cursor:"pointer" }}>{t.topup}</button>
-            </div>
-            <div style={{ display:"flex", gap:24 }}>
-              <div><div style={{ color:C.accent, fontSize:22, fontWeight:800 }}>{coins}</div><div style={{ color:C.textMuted, fontSize:12 }}>🪙 {t.coins}</div></div>
-              <div><div style={{ color:C.text, fontSize:22, fontWeight:800 }}>0</div><div style={{ color:C.textMuted, fontSize:12 }}>🎟 Бонусы</div></div>
-            </div>
-          </div>
-          {[
-            { icon:<IcoHistory/>, label:t.history, count:continueList.length },
-            { icon:<IcoBookmark f={false}/>, label:t.bookmarks },
-            { icon:<IcoCrown/>, label:t.bonuses },
-            { icon:<span style={{fontSize:18}}>{LANGUAGES.find(l=>l.code===appLang)?.flag}</span>, label:t.language, action:()=>setShowLangPicker(true) },
-          ].map(item=>(
-            <div key={item.label} onClick={item.action} style={{ background:C.card, borderRadius:12, padding:"14px 16px", marginBottom:10, display:"flex", alignItems:"center", gap:12, cursor:"pointer" }}>
-              <div style={{ color:C.textMuted }}>{item.icon}</div>
-              <div style={{ flex:1, color:C.text, fontSize:14 }}>{item.label}</div>
-              {item.count!==undefined&&<span style={{ background:C.accent, color:"#fff", borderRadius:20, padding:"2px 8px", fontSize:11, fontWeight:700 }}>{item.count}</span>}
-              <span style={{ color:C.textDim }}>›</span>
-            </div>
+    <>
+      <nav style={styles.mobileNav}>
+        <div style={styles.mobileNavContent}>
+          {navItems.map((item) => (
+            <a
+              key={item.label}
+              href="#"
+              style={{
+                ...styles.mobileNavItem,
+                ...(item.active ? styles.mobileNavItemActive : {}),
+              }}
+            >
+              <item.icon />
+              <span>{item.label}</span>
+            </a>
           ))}
         </div>
-      )}
+      </nav>
+      <div style={{ height: '64px' }} />
+    </>
+  );
+}
 
-      <div style={{ position:"fixed", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:430, background:"#0d0e14", borderTop:`1px solid ${C.card2}`, display:"flex" }}>
-        {[
-          { id:"home",    icon:<IcoHome/>,  label:t.home },
-          { id:"watch",   icon:<IcoPlay/>,  label:t.watch },
-          { id:"profile", icon:<IcoUser/>,  label:t.profile },
-        ].map(item=>(
-          <button key={item.id} onClick={()=>setTab(item.id)} style={{ flex:1, background:"none", border:"none", padding:"10px 0 8px", color:tab===item.id?C.accent:C.textMuted, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:3 }}>
-            {item.icon}
-            <span style={{ fontSize:10 }}>{item.label}</span>
-          </button>
-        ))}
-      </div>
+// Main App
+export default function App() {
+  return (
+    <div style={styles.app}>
+      <Header />
+      
+      <main style={{ paddingTop: '64px' }}>
+        <HeroBanner drama={featuredDrama} />
+        
+        <div>
+          <DramaCarousel title="Trending Now" dramas={trendingDramas} />
+          <DramaCarousel title="New Releases" dramas={newReleases} />
+          <DramaCarousel title="Exclusive Originals" dramas={exclusiveOriginals} />
+        </div>
+      </main>
+
+      <Footer />
+      <MobileNav />
     </div>
   );
 }
